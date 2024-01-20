@@ -1,11 +1,22 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 
 import uvicorn
 
+from core.models import Base, db_helper
 from menu_views import router as menus_router
 from dishes.views import router as dishes_router
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    async with db_helper.engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+    yield
+
+app = FastAPI(lifespan=lifespan)
 app.include_router(menus_router)
 app.include_router(dishes_router)
 
