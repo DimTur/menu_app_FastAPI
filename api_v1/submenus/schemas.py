@@ -9,6 +9,10 @@ class SubmenuBase(BaseModel):
     description: Annotated[str, MinLen(0), MaxLen(300)]
 
 
+class SubmenuCreate(SubmenuBase):
+    pass
+
+
 class Submenu(SubmenuBase):
     model_config = ConfigDict(from_attributes=True)
 
