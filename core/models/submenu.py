@@ -20,4 +20,13 @@ class Submenu(Base):
         ForeignKey("menus.id"),
     )
     menu: Mapped["Menu"] = relationship(back_populates="submenus")
-    dishes: Mapped[list["Dish"]] = relationship(back_populates="submenu")
+    dishes: Mapped[list["Dish"]] = relationship(
+        back_populates="submenu",
+        cascade="all, delete-orphan",
+    )
+
+    def __str__(self):
+        return f"{self.__class__.__name__}(id={self.id}, title={self.title!r}, menu_id={self.menu_id})"
+
+    def __repr__(self):
+        return str(self)

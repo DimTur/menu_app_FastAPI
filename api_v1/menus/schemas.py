@@ -6,7 +6,7 @@ from pydantic import BaseModel, ConfigDict
 
 class MenuBase(BaseModel):
     title: Annotated[str, MinLen(3), MaxLen(32)]
-    description: Annotated[str, MinLen(3), MaxLen(300)]
+    description: Annotated[str, MinLen(0), MaxLen(300)]
 
 
 class MenuCreate(MenuBase):

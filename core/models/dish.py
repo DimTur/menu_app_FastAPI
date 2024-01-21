@@ -20,3 +20,9 @@ class Dish(Base):
         ForeignKey("submenus.id"),
     )
     submenu: Mapped["Submenu"] = relationship(back_populates="dishes")
+
+    def __str__(self):
+        return f"{self.__class__.__name__}(id={self.id}, title={self.title!r})"
+
+    def __repr__(self):
+        return str(self)
