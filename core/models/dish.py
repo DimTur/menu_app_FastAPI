@@ -1,9 +1,15 @@
 import uuid
 
+from typing import TYPE_CHECKING
+
 from sqlalchemy import ForeignKey, Float
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.models import Base
+
+# за счет этой конструкции мы избегаем циклических импортов
+if TYPE_CHECKING:
+    from .menu import Submenu
 
 
 class Dish(Base):
@@ -13,3 +19,4 @@ class Dish(Base):
     submenu_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("submenus.id"),
     )
+    submenu: Mapped["Submenu"] = relationship(back_populates="dishes")
