@@ -22,20 +22,5 @@ app.include_router(router=router_v1, prefix=settings.api_v1_prefix)
 app.include_router(dishes_router)
 
 
-@app.get("/")
-def hello_index():
-    return {
-        "message": "Hello world!"
-    }
-
-
-@app.get("/hello/")
-def hello(name: str = "World"):
-    name = name.strip().title()
-    return {
-        "message": f"Hello {name}!"
-    }
-
-
 if __name__ == "__main__":
     uvicorn.run("main:app", reload=True)
