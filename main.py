@@ -4,8 +4,9 @@ from fastapi import FastAPI
 
 import uvicorn
 
+from core.config import settings
 from core.models import Base, db_helper
-from menu_views import router as menus_router
+from api_v1 import router as router_v1
 from dishes.views import router as dishes_router
 
 
@@ -17,7 +18,7 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(lifespan=lifespan)
-app.include_router(menus_router)
+app.include_router(router=router_v1, prefix=settings.api_v1_prefix)
 app.include_router(dishes_router)
 
 

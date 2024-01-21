@@ -18,7 +18,10 @@ class Base(DeclarativeBase):
         unique=True,
         nullable=False
     )
-    title: Mapped[str] = mapped_column(String(32))
+    title: Mapped[str] = mapped_column(
+        String(32),
+        unique=True,
+    )
     description: Mapped[str] = mapped_column(
         Text,
         default="",
