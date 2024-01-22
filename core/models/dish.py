@@ -1,6 +1,6 @@
 import uuid
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import ForeignKey, Float
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -26,3 +26,9 @@ class Dish(Base):
 
     def __repr__(self):
         return str(self)
+
+    @property
+    def formatted_price(self) -> Optional[str]:
+        if self.price is not None:
+            return f"{self.price:.2f}"
+        return None

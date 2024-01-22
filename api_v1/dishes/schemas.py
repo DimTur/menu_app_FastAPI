@@ -7,11 +7,13 @@ from pydantic import BaseModel, ConfigDict
 class DishBase(BaseModel):
     title: Annotated[str, MinLen(3), MaxLen(32)]
     description: Annotated[str, MinLen(0), MaxLen(300)]
+    formatted_price: str
+
+
+class DishCreate(BaseModel):
+    title: Annotated[str, MinLen(3), MaxLen(32)]
+    description: Annotated[str, MinLen(0), MaxLen(300)]
     price: float
-
-
-class DishCreate(DishBase):
-    pass
 
 
 class DishUpdate(DishCreate):
