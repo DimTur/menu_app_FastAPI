@@ -16,16 +16,18 @@
 
     pip install poetry
 
-    poetry install --no-root
+    poetry install
 
-**4. Проводим миграции**
-
-    alembic upgrade head
-
-**5. Поднимаем docker comopose в соседнем терминале**
+**4. Поднимаем docker comopose в соседнем терминале**
 
     docker compose up
+
+**5. Проводим миграции**
+
+    alembic upgrade head
 
 **6. Запускаем main.py**
 
     python main.py
+
+**7. Пользуемся приложением**
