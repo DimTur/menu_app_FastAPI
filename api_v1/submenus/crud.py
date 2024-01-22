@@ -53,13 +53,19 @@ async def create_submenu(
 
 async def update_submenu(
     session: AsyncSession,
-    # menu_id: uuid.UUID,
     submenu: Submenu,
     submenu_update: SubmenuUpdate | SubmenuUpdatePartial,
     partial: bool = True,
 ) -> Submenu:
-    # submenu = [Submenu(menu_id=menu_id)]
     for title, value in submenu_update.model_dump(exclude_unset=partial).items():
         setattr(submenu, title, value)
     await session.commit()
     return submenu
+
+
+async def delete_submenu(
+    session: AsyncSession,
+    submenu: Submenu,
+) -> None:
+    await session.delete(submenu)
+    await session.commit()

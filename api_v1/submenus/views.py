@@ -60,3 +60,14 @@ async def update_submenu_partial(
         submenu_update=submenu_update,
         partial=True,
     )
+
+
+@router.delete("/{submenu_id}")
+async def delete_submenu(
+    submenu: Submenu = Depends(submenu_by_id),
+    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+):
+    await crud.delete_submenu(
+        session=session,
+        submenu=submenu,
+    )
