@@ -2,7 +2,7 @@
 
 **1. Клонируем репозиторий:**
 
-    git clone <ссылка с git-hub>
+    git clone https://github.com/DimTur/menu_app_FastApi.git
 
 **2. Переходим в папку /menu_app_FastApi**
 
