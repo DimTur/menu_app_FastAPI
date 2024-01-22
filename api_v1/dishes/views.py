@@ -18,7 +18,7 @@ from ..submenus.schemas import Submenu
 router = APIRouter(tags=["Dishes"])
 
 from . import crud
-from .schemas import Dish, DishCreate
+from .schemas import Dish, DishCreate, DishUpdatePartial
 
 
 @router.get("/", response_model=list[Dish])
@@ -58,3 +58,17 @@ async def get_dish_by_if(
     dish: Dish = Depends(dish_by_id),
 ):
     return dish
+
+
+@router.patch("/{dish_id}")
+async def update_dish_partial(
+    dish_update: DishUpdatePartial,
+    dish: Dish = Depends(dish_by_id),
+    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+):
+    return await crud.update_dish(
+        session=session,
+        dish=dish,
+        dish_update=dish_update,
+        partial=True,
+    )

@@ -1,11 +1,11 @@
 import uuid
 
-from sqlalchemy import select, or_, and_
+from sqlalchemy import select
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from api_v1.dishes.schemas import DishCreate
+from api_v1.dishes.schemas import DishCreate, DishUpdate, DishUpdatePartial
 from core.models import Dish, Submenu, Menu
 
 
@@ -23,29 +23,6 @@ async def get_dishes(
     result: Result = await session.execute(stmt)
     dishes = result.scalars().all()
     return list(dishes)
-
-
-# async def get_dishes(
-#     session: AsyncSession,
-#     menu_id: uuid.UUID,
-#     submenu_id: uuid.UUID,
-# ) -> list[Dish]:
-#     submenu = (
-#         select(Submenu)
-#         .join(Submenu.menu)
-#         .options(joinedload(Submenu.menu))
-#         .where(Menu.id == menu_id)
-#     )
-#     stmt = (
-#         select(Dish)
-#         .join(Dish.submenu)
-#         .options(joinedload(Dish.submenu))
-#         .where(Submenu.id == submenu_id)
-#         .order_by(Dish.title)
-#     )
-#     result: Result = await session.execute(stmt)
-#     dishes = result.scalars().all()
-#     return list(dishes)
 
 
 async def get_dish_by_id(
@@ -81,8 +58,16 @@ async def create_dish(
     return dish
 
 
-async def update_dish():
-    pass
+async def update_dish(
+    session: AsyncSession,
+    dish: Dish,
+    dish_update: DishUpdate | DishUpdatePartial,
+    partial: bool = True,
+) -> Dish:
+    for title, value in dish_update.model_dump(exclude_unset=partial).items():
+        setattr(dish, title, value)
+    await session.commit()
+    return dish
 
 
 async def delete_dish():
