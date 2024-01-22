@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 
 class DbSettings(BaseModel):
-    url: str = "postgresql+asyncpg://postgres:postgres@localhost:5434/postgres"
+    url: str = "postgresql+asyncpg://postgres:postgres@localhost:5431/postgres"
     echo: bool = False
 
 
