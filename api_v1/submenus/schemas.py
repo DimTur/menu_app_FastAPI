@@ -26,3 +26,4 @@ class Submenu(SubmenuBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: uuid.UUID
+    dishes_count: int = 0

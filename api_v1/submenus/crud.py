@@ -3,7 +3,7 @@ import uuid
 from sqlalchemy import select
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, selectinload
 
 from core.models import Submenu, Menu
 from .schemas import SubmenuCreate, SubmenuUpdate, SubmenuUpdatePartial
@@ -29,13 +29,17 @@ async def get_submenu_by_id(
 ) -> Submenu | None:
     stmt = (
         select(Submenu)
+        .options(selectinload(Submenu.dishes))
         .join(Submenu.menu)
-        .options(joinedload(Submenu.menu))
         .where(Menu.id == menu_id)
-        .where(submenu_id == submenu_id)
+        .where(Submenu.id == submenu_id)
     )
     result: Result = await session.execute(stmt)
     submenu = result.scalar()
+
+    if submenu:
+        submenu.dishes_count = len(submenu.dishes)
+
     return submenu
 
 
