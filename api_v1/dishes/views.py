@@ -45,6 +45,9 @@ async def create_dish(
     dish_in: DishCreate,
     session: AsyncSession = Depends(db_helper.scoped_session_dependency),
 ):
+    dish_in_data = dish_in.model_dump()
+    dish_in_data["price"] = str(dish_in_data["price"])
+
     return await crud.create_dish(
         session=session,
         # menu_id=menu_id,

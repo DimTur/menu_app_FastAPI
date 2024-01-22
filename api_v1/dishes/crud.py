@@ -66,7 +66,12 @@ async def update_dish(
 ) -> Dish:
     for title, value in dish_update.model_dump(exclude_unset=partial).items():
         setattr(dish, title, value)
+
+    if "price" in dish_update:
+        dish.price = str(dish.price)
+
     await session.commit()
+    dish.price = str(dish.price)
     return dish
 
 

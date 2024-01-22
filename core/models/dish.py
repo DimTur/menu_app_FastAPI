@@ -1,8 +1,8 @@
 import uuid
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey, Float
+from sqlalchemy import ForeignKey, DECIMAL
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.models import Base
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 class Dish(Base):
     __tablename__ = "dishes"
 
-    price: Mapped[float] = mapped_column(Float(precision=2))
+    price: Mapped[DECIMAL] = mapped_column(DECIMAL(precision=10, scale=2))
     submenu_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("submenus.id"),
     )
@@ -26,9 +26,3 @@ class Dish(Base):
 
     def __repr__(self):
         return str(self)
-
-    @property
-    def formatted_price(self) -> Optional[str]:
-        if self.price is not None:
-            return f"{self.price:.2f}"
-        return None
