@@ -37,7 +37,9 @@ async def create_submenu(
     session: AsyncSession = Depends(db_helper.scoped_session_dependency),
 ):
     return await crud.create_submenu(
-        session=session, menu_id=menu_id, submenu_in=submenu_in
+        session=session,
+        menu_id=menu_id,
+        submenu_in=submenu_in,
     )
 
 

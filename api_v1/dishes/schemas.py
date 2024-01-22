@@ -7,7 +7,7 @@ from pydantic import BaseModel, ConfigDict
 class DishBase(BaseModel):
     title: Annotated[str, MinLen(3), MaxLen(32)]
     description: Annotated[str, MinLen(0), MaxLen(300)]
-    price: str
+    price: float
 
 
 class DishCreate(DishBase):
@@ -21,7 +21,7 @@ class DishUpdate(DishCreate):
 class DishUpdatePartial(DishCreate):
     title: Annotated[str, MinLen(3), MaxLen(32)] | None = None
     description: Annotated[str, MinLen(0), MaxLen(300)] | None = None
-    price: str | None
+    price: float | None
 
 
 class Dish(DishBase):

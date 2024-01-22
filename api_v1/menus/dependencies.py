@@ -24,5 +24,5 @@ async def menu_by_id(
 
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
-        detail=f"Menu {menu_id} not found!",
+        detail=f"menu not found",
     )

@@ -8,5 +8,5 @@ router = APIRouter()
 router.include_router(router=menus_router, prefix="/menus")
 router.include_router(router=submenus_router, prefix="/menus/{menu_id}/submenus")
 router.include_router(
-    router=dishes_router, prefix="/menus/{menu_id}/submenus/{submenu_id}"
+    router=dishes_router, prefix="/menus/{menu_id}/submenus/{submenu_id}/dishes"
 )
