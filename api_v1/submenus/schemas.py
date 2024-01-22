@@ -2,6 +2,7 @@ import uuid
 from typing import Annotated
 from annotated_types import MinLen, MaxLen
 from pydantic import BaseModel, ConfigDict
+from fastapi import Path
 
 
 class SubmenuBase(BaseModel):
@@ -15,6 +16,11 @@ class SubmenuCreate(SubmenuBase):
 
 class SubmenuUpdate(SubmenuCreate):
     pass
+
+
+class SubmenuUpdatePartial(SubmenuCreate):
+    title: Annotated[str, MinLen(3), MaxLen(32)] | None = None
+    description: Annotated[str, MinLen(0), MaxLen(300)] | None = None
 
 
 class Submenu(SubmenuBase):

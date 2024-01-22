@@ -10,11 +10,12 @@ from fastapi import (
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import db_helper
+from .dependencies import submenu_by_id
 
 router = APIRouter(tags=["Submenus"])
 
 from . import crud
-from .schemas import Submenu, SubmenuBase, SubmenuCreate
+from .schemas import Submenu, SubmenuBase, SubmenuCreate, SubmenuUpdatePartial
 
 
 @router.get("/", response_model=list[Submenu])
@@ -42,10 +43,20 @@ async def create_submenu(
 
 @router.get("/{submenu_id}", response_model=Submenu)
 async def get_submenu_bu_id(
-    menu_id: Annotated[uuid.UUID, Path],
-    submenu_id: Annotated[uuid.UUID, Path],
+    submenu: Submenu = Depends(submenu_by_id),
+):
+    return submenu
+
+
+@router.patch("/{submenu_id}")
+async def update_submenu_partial(
+    submenu_update: SubmenuUpdatePartial,
+    submenu: Submenu = Depends(submenu_by_id),
     session: AsyncSession = Depends(db_helper.scoped_session_dependency),
 ):
-    return await crud.get_submenu_by_id(
-        session=session, menu_id=menu_id, submenu_id=submenu_id
+    return await crud.update_submenu(
+        session=session,
+        submenu=submenu,
+        submenu_update=submenu_update,
+        partial=True,
     )

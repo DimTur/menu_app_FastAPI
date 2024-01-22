@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
 from core.models import Submenu, Menu
-from .schemas import SubmenuCreate
+from .schemas import SubmenuCreate, SubmenuUpdate, SubmenuUpdatePartial
 
 
 async def get_submenus(session: AsyncSession, menu_id: uuid.UUID) -> list[Submenu]:
@@ -51,5 +51,15 @@ async def create_submenu(
     return submenu
 
 
-async def update_submenu():
-    pass
+async def update_submenu(
+    session: AsyncSession,
+    # menu_id: uuid.UUID,
+    submenu: Submenu,
+    submenu_update: SubmenuUpdate | SubmenuUpdatePartial,
+    partial: bool = True,
+) -> Submenu:
+    # submenu = [Submenu(menu_id=menu_id)]
+    for title, value in submenu_update.model_dump(exclude_unset=partial).items():
+        setattr(submenu, title, value)
+    await session.commit()
+    return submenu
