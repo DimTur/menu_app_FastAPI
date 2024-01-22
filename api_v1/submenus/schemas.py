@@ -13,6 +13,10 @@ class SubmenuCreate(SubmenuBase):
     pass
 
 
+class SubmenuUpdate(SubmenuCreate):
+    pass
+
+
 class Submenu(SubmenuBase):
     model_config = ConfigDict(from_attributes=True)
 

@@ -38,3 +38,14 @@ async def create_submenu(
     return await crud.create_submenu(
         session=session, menu_id=menu_id, submenu_in=submenu_in
     )
+
+
+@router.get("/{submenu_id}", response_model=Submenu)
+async def get_submenu_bu_id(
+    menu_id: Annotated[uuid.UUID, Path],
+    submenu_id: Annotated[uuid.UUID, Path],
+    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+):
+    return await crud.get_submenu_by_id(
+        session=session, menu_id=menu_id, submenu_id=submenu_id
+    )

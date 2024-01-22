@@ -22,6 +22,23 @@ async def get_submenus(session: AsyncSession, menu_id: uuid.UUID) -> list[Submen
     return list(submenus)
 
 
+async def get_submenu_by_id(
+    session: AsyncSession,
+    menu_id: uuid.UUID,
+    submenu_id: uuid.UUID,
+) -> Submenu | None:
+    stmt = (
+        select(Submenu)
+        .join(Submenu.menu)
+        .options(joinedload(Submenu.menu))
+        .where(Menu.id == menu_id)
+        .where(submenu_id == submenu_id)
+    )
+    result: Result = await session.execute(stmt)
+    submenu = result.scalar()
+    return submenu
+
+
 async def create_submenu(
     session: AsyncSession,
     menu_id: uuid.UUID,
@@ -32,3 +49,7 @@ async def create_submenu(
     await session.commit()
     await session.refresh(submenu)
     return submenu
+
+
+async def update_submenu():
+    pass
