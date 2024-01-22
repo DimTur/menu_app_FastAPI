@@ -72,3 +72,14 @@ async def update_dish_partial(
         dish_update=dish_update,
         partial=True,
     )
+
+
+@router.delete("/{dish_id}")
+async def delete_dish(
+    dish: Dish = Depends(dish_by_id),
+    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+):
+    await crud.delete_dish(
+        session=session,
+        dish=dish,
+    )
