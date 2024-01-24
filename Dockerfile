@@ -9,4 +9,4 @@ RUN poetry install --no-dev
 
 COPY . .
 
-CMD ["uvicorn", "main:app", "--host=0.0.0.0", "--loop=uvloop", "--port=80"]
+RUN chmod a+x docker/*.sh
