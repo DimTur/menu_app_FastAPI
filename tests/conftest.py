@@ -18,7 +18,7 @@ async def prepare_database():
 
 
 async def override_scoped_session_dependency() -> AsyncSession:
-    session = db_helper.scoped_session_dependency()
+    session = db_helper.get_scoped_session()
     yield session
     await session.close()
 
