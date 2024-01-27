@@ -117,6 +117,37 @@ async def test_update_menu_partial(
     assert "submenus_count" in response.json(), "В ответе отсутствует submenus_count"
     assert "dishes_count" in response.json(), "В ответе отсутствует dishes_count"
 
+    saved_data["menu"] = response.json()
+
+
+@pytest.mark.asyncio
+async def test_get_updated_menu_by_id(
+    saved_data: dict[str, Any],
+    async_client: AsyncClient,
+):
+    menu = saved_data["menu"]
+    response = await async_client.get(
+        "/api/v1/menus/",
+        params={"id": menu["id"]},
+    )
+
+    assert response.status_code == 200, "Статус ответа не 200"
+    assert (
+        response.json()[0]["id"] == menu["id"]
+    ), "Идентификатор не соответствует ожидаемому"
+    assert (
+        response.json()[0]["title"] == menu["title"]
+    ), "Название не соответствует ожидаемому"
+    assert (
+        response.json()[0]["description"] == menu["description"]
+    ), "Описание не соответствует ожидаемому"
+    assert (
+        response.json()[0]["submenus_count"] == menu["submenus_count"]
+    ), "Количество подменю не соответствует ожидаемому"
+    assert (
+        response.json()[0]["dishes_count"] == menu["dishes_count"]
+    ), "Количество блюд не соответствует ожидаемому"
+
 
 # @pytest.mark.asyncio
 # async def test_delete_menu(
