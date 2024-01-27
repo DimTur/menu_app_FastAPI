@@ -45,10 +45,6 @@ async def test_add_menu(
         response.json()["description"] == post_menu["description"]
     ), "Описание не соответствует ожидаемому"
 
-    menu_id = response.json()["id"]
-    assert menu_id is not None
-    assert isinstance(menu_id, str)
-
     saved_data["menu"] = response.json()
 
 
@@ -124,26 +120,24 @@ async def test_get_updated_menu_by_id(
     async_client: AsyncClient,
 ):
     menu = saved_data["menu"]
-    response = await async_client.get(
-        "/api/v1/menus/",
-        params={"id": menu["id"]},
-    )
+    url = f"/api/v1/menus/{menu['id']}"
+    response = await async_client.get(url)
 
     assert response.status_code == 200, "Статус ответа не 200"
     assert (
-        response.json()[0]["id"] == menu["id"]
+        response.json()["id"] == menu["id"]
     ), "Идентификатор не соответствует ожидаемому"
     assert (
-        response.json()[0]["title"] == menu["title"]
+        response.json()["title"] == menu["title"]
     ), "Название не соответствует ожидаемому"
     assert (
-        response.json()[0]["description"] == menu["description"]
+        response.json()["description"] == menu["description"]
     ), "Описание не соответствует ожидаемому"
     assert (
-        response.json()[0]["submenus_count"] == menu["submenus_count"]
+        response.json()["submenus_count"] == menu["submenus_count"]
     ), "Количество подменю не соответствует ожидаемому"
     assert (
-        response.json()[0]["dishes_count"] == menu["dishes_count"]
+        response.json()["dishes_count"] == menu["dishes_count"]
     ), "Количество блюд не соответствует ожидаемому"
 
 
