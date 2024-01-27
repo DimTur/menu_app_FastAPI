@@ -68,26 +68,24 @@ async def test_get_menu_by_id(
     async_client: AsyncClient,
 ):
     menu = saved_data["menu"]
-    response = await async_client.get(
-        "/api/v1/menus/",
-        params={"id": menu["id"]},
-    )
+    url = f"/api/v1/menus/{menu['id']}"
+    response = await async_client.get(url)
 
     assert response.status_code == 200, "Статус ответа не 200"
     assert (
-        response.json()[0]["id"] == menu["id"]
+        response.json()["id"] == menu["id"]
     ), "Идентификатор не соответствует ожидаемому"
     assert (
-        response.json()[0]["title"] == menu["title"]
+        response.json()["title"] == menu["title"]
     ), "Название не соответствует ожидаемому"
     assert (
-        response.json()[0]["description"] == menu["description"]
+        response.json()["description"] == menu["description"]
     ), "Описание не соответствует ожидаемому"
     assert (
-        response.json()[0]["submenus_count"] == menu["submenus_count"]
+        response.json()["submenus_count"] == menu["submenus_count"]
     ), "Количество подменю не соответствует ожидаемому"
     assert (
-        response.json()[0]["dishes_count"] == menu["dishes_count"]
+        response.json()["dishes_count"] == menu["dishes_count"]
     ), "Количество блюд не соответствует ожидаемому"
 
 
@@ -149,18 +147,39 @@ async def test_get_updated_menu_by_id(
     ), "Количество блюд не соответствует ожидаемому"
 
 
-# @pytest.mark.asyncio
-# async def test_delete_menu(
-#     saved_data: dict[str, Any],
-#     async_client: AsyncClient,
-# ):
-#     menu = saved_data["menu"]
-#     url = f"/api/v1/menus/{menu['id']}"
-#     print(url)
-#     response = await async_client.delete(url)
-#
-#     print(response)
-#     # assert response.status_code == 200
-#     # assert response.json()[0]["id"] == menu["id"]
-#     # assert response.json()[0]["title"] == menu["title"]
-#     # assert response.json()[0]["description"] == menu["description"]
+@pytest.mark.asyncio
+async def test_delete_menu(
+    saved_data: dict[str, Any],
+    async_client: AsyncClient,
+):
+    menu = saved_data["menu"]
+    url = f"/api/v1/menus/{menu['id']}"
+    response = await async_client.delete(url)
+
+    assert response.status_code == 200, "Статус ответа не 200"
+    assert response.json() is None, "Сообщение об удалении не соответствует ожидаемому"
+
+
+@pytest.mark.asyncio
+async def test_get_new_empty_menus(async_client: AsyncClient):
+    response = await async_client.get(
+        "/api/v1/menus/",
+    )
+
+    assert response.status_code == 200, "Статус ответа не 200"
+    assert response.json() == [], "В ответе не пустой список"
+
+
+@pytest.mark.asyncio
+async def test_get_deleted_menu_by_id(
+    saved_data: dict[str, Any],
+    async_client: AsyncClient,
+):
+    menu = saved_data["menu"]
+    url = f"/api/v1/menus/{menu['id']}"
+    response = await async_client.get(url)
+
+    assert response.status_code == 404, "Статус ответа не 404"
+    assert (
+        response.json()["detail"] == "menu not found"
+    ), "Сообщение об ошибке не соответствует ожидаемому"
