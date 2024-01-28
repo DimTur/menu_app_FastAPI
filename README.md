@@ -4,30 +4,29 @@
 
     git clone https://github.com/DimTur/menu_app_FastApi.git
 
-**2. Переходим в папку /menu_app_FastApi**
+**2. Перейти в папку /menu_app_FastApi**
 
-***2.1. Убедитесь что у Вас установлено виртуально окружение, если нет, то:***
+**3. Поднимаем docker comopose в фоновом режиме**
 
-    python3 -m venv venv
-    
-    source venv/bin/activate
+    docker compose up -d
 
-**3. Устанавливаем poetry и зависимости**
+**4. Пользуемся приложением по адресу http://127.0.0.1:8000/docs**
 
-    pip install poetry
+**5. Чтобы остановить работу контейнеров вводим команду:**
 
-    poetry install
+    docker compose down
 
-**4. Поднимаем docker comopose в соседнем терминале**
+**Однако, рекомендуется прекращать работу контейнеров с удалением томов, команда:**
 
-    docker compose up
+    docker compose down -v
 
-**5. Проводим миграции**
+## Запуск приложения с прохождением тестов
 
-    alembic upgrade head
+**Для прогона тестов необходимо убедиться, что Вы выполнили команду "docker compose down -v" для 
+корректного запуска тестового сценария**
 
-**6. Запускаем main.py**
+**Чтобы запустить тестовый сценарий, введите команду, представленную ниже. Она создаст нужные контейнеры, 
+прогонит написанные мной тесты, выведет результаты в консоль, после чего остановит зупущенные сервисы, удалит 
+контейнеры, тома и образы, которые использовались**
 
-    python main.py
-
-**7. Пользуемся приложением**
+    docker compose -f docker-compose-pytest.yml up -d && docker logs --follow menu_app_fastapi_test && docker compose -f docker-compose-pytest.yml down -v
