@@ -2,7 +2,7 @@ version: "3.8"
 services:
   db:
     image: postgres:16.1
-    container_name: db_menu_app
+    container_name: db_menu_app_test
     expose:
       - "5432"
     ports:
@@ -26,7 +26,7 @@ services:
       dockerfile: Dockerfile
     env_file:
       - .test.env
-    container_name: menu_app_fastapi
+    container_name: menu_app_fastapi_test
     command: sh -c "pytest -v"
     ports:
       - "8000:80"

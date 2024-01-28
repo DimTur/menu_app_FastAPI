@@ -2,7 +2,7 @@ from asyncio import current_task
 from contextlib import asynccontextmanager
 from typing import AsyncIterator
 
-from sqlalchemy import NullPool
+from sqlalchemy import pool, QueuePool, NullPool
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     create_async_engine,
@@ -16,18 +16,19 @@ from core.models import Base
 
 
 class DatabaseHelper:
-    def __init__(self, url: str, echo: bool = False):
+    def __init__(self, url: str, echo: bool = False, poolclass: str = None):
+        if poolclass is None:
+            poolclass = QueuePool
+        else:
+            poolclass = getattr(pool, poolclass)
+
         self.engine = create_async_engine(
             url=url,
             echo=echo,
-        )
-        self.engine_test = create_async_engine(
-            url=url,
-            echo=echo,
-            poolclass=NullPool,
+            poolclass=poolclass,
         )
         self.session_factory = async_sessionmaker(
-            bind=self.engine_test,
+            bind=self.engine,
             autoflush=False,
             autocommit=False,
             expire_on_commit=False,
@@ -66,4 +67,5 @@ class DatabaseHelper:
 db_helper = DatabaseHelper(
     url=settings.db.url,
     echo=settings.db.echo,
+    poolclass=settings.db.poolclass,
 )

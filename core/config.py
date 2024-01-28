@@ -22,6 +22,13 @@ class DbSettings(BaseSettings):
 
     echo: bool = False
 
+    @property
+    def poolclass(self):
+        if self.MODE == "DEV":
+            return "QueuePool"
+        elif self.MODE == "TEST":
+            return "NullPool"
+
 
 class Settings(BaseSettings):
     api_v1_prefix: str = "/api/v1"
