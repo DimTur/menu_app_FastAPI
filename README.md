@@ -30,3 +30,6 @@
 контейнеры, тома и образы, которые использовались
 
     docker compose -f docker-compose-pytest.yml up -d && docker logs --follow menu_app_fastapi_test && docker compose -f docker-compose-pytest.yml down -v
+
+**3-ий пункт ДЗ реализован в api_v1.munus.crud в функциях "get_menus" и  "get_menu_by_id", аналогично в submenus**
+
