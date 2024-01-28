@@ -1,20 +1,19 @@
-version: "2.24.1"
+version: "3.8"
 services:
   db:
     image: postgres:16.1
     container_name: db_menu_app
-    restart: always
     expose:
       - "5432"
     ports:
-      - "5433:5432"
+      - "6000:5432"
     env_file:
-      - .env
+      - .test.env
     volumes:
       - db_data:/var/lib/postgresql/data/
     networks:
-      - backend_network
-      - db_network
+      - backend_network_pytest
+      - db_network_pytest
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]
       interval: 10s
@@ -26,23 +25,22 @@ services:
       context: .
       dockerfile: Dockerfile
     env_file:
-      - .env
+      - .test.env
     container_name: menu_app_fastapi
-    restart: always
-    command: ["/menu_app_FastApi/docker/app.sh"]
+    command: sh -c "pytest -v"
     ports:
       - "8000:80"
     depends_on:
       - db
     networks:
-      - backend_network
+      - backend_network_pytest
 
 networks:
-  backend_network:
-    name: menu_app
-  db_network:
-    name: db_for_menu_app
+  backend_network_pytest:
+    name: backend_network_pytest
+  db_network_pytest:
+    name: db_network_pytest
 
 volumes:
   db_data:
-    name: pg_data_menu
+    name: pg_data_menu_pytest
