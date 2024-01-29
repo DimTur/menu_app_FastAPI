@@ -21,6 +21,27 @@ services:
       timeout: 30s
       retries: 5
 
+  redis:
+    image: redis:7
+    container_name: redis_app
+    restart: always
+    volumes:
+      - redis_data:/data
+    networks:
+      - backend_network
+      - db_network
+    expose:
+      - "6379"
+    ports:
+      - "6379:6379"
+    env_file:
+      - .env
+    healthcheck:
+      test: [ "CMD-SHELL", "redis-cli ping | grep PONG" ]
+      interval: 1s
+      timeout: 3s
+      retries: 5
+
   backend:
     build:
       context: .
@@ -46,3 +67,5 @@ networks:
 volumes:
   db_data:
     name: pg_data_menu
+  redis_data:
+    name: redis_data_menu

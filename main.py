@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 
+import aioredis
 from fastapi import FastAPI
 
 import uvicorn
@@ -7,10 +8,14 @@ import uvicorn
 from core.config import settings
 from api_v1 import router as router_v1
 
+from core.config import settings
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    redis = aioredis.from_url(settings.redis_settings.redis_url)
     yield
+    redis.close()
 
 
 app = FastAPI(lifespan=lifespan)

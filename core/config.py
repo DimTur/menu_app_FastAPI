@@ -30,10 +30,22 @@ class DbSettings(BaseSettings):
             return "NullPool"
 
 
+class RedisSettings(BaseSettings):
+    REDIS_HOST: str
+    REDIS_PORT: int
+
+    @property
+    def redis_url(self):
+        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}"
+
+    model_config = SettingsConfigDict(env_file=".env")
+
+
 class Settings(BaseSettings):
     api_v1_prefix: str = "/api/v1"
 
     db: DbSettings = DbSettings()
+    redis_settings: RedisSettings = RedisSettings()
 
 
 settings = Settings()
