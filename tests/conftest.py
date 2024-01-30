@@ -19,20 +19,15 @@ async def prepare_database():
 
 async def override_scoped_session_dependency() -> AsyncSession:
     session = db_helper.get_scoped_session()
-    yield session
-    await session.close()
+    try:
+        yield session
+    finally:
+        await session.close()
 
 
 app.dependency_overrides[
     db_helper.scoped_session_dependency
 ] = override_scoped_session_dependency
-
-
-@pytest.fixture(scope="session")
-def event_loop(request):
-    loop = asyncio.get_event_loop_policy().new_event_loop()
-    yield loop
-    loop.close()
 
 
 @pytest.fixture(scope="session")
