@@ -1,4 +1,3 @@
-import asyncio
 from typing import AsyncGenerator
 
 import pytest
@@ -10,7 +9,7 @@ from core.models.db_helper import db_helper
 from main import app
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="function", autouse=True)
 async def prepare_database():
     async with db_helper.connect() as conn:
         await db_helper.drop_all(conn)
