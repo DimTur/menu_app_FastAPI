@@ -64,8 +64,7 @@ async def test_get_menu_by_id(
     async_client: AsyncClient,
     test_add_and_get_one_menu,
 ):
-    menus = test_add_and_get_one_menu
-    menu = menus[0][0]
+    menu = test_add_and_get_one_menu[0][0]
     url = f"/api/v1/menus/{menu.id}"
     response = await async_client.get(url)
 
@@ -87,8 +86,7 @@ async def test_update_menu_partial(
     async_client: AsyncClient,
     test_add_and_get_one_menu,
 ):
-    menus = test_add_and_get_one_menu
-    menu = menus[0][0]
+    menu = test_add_and_get_one_menu[0][0]
     url = f"/api/v1/menus/{menu.id}"
     response = await async_client.patch(
         url,
@@ -114,8 +112,7 @@ async def test_delete_menu(
     async_client: AsyncClient,
     test_add_and_get_one_menu,
 ):
-    menus = test_add_and_get_one_menu
-    menu = menus[0][0]
+    menu = test_add_and_get_one_menu[0][0]
     url = f"/api/v1/menus/{menu.id}"
     response = await async_client.delete(url)
 
