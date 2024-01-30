@@ -14,8 +14,8 @@ from fixtures import (
 
 @pytest.mark.asyncio
 async def test_get_empty_menus(
-    async_client: AsyncClient,
     get_empty_menus,
+    async_client: AsyncClient,
 ):
     response = await async_client.get(
         "/api/v1/menus/",
@@ -25,7 +25,7 @@ async def test_get_empty_menus(
     assert response.json() == get_empty_menus, "В ответе не пустой список"
 
 
-@pytest.mark.usefixtures("post_menu")
+@pytest.mark.asyncio
 async def test_add_menu(
     post_menu: dict[str, str],
     async_client: AsyncClient,
@@ -61,8 +61,8 @@ async def test_get_menus(async_client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_get_menu_by_id(
-    async_client: AsyncClient,
     test_add_and_get_one_menu,
+    async_client: AsyncClient,
 ):
     menu = test_add_and_get_one_menu[0][0]
     url = f"/api/v1/menus/{menu.id}"
@@ -83,8 +83,8 @@ async def test_get_menu_by_id(
 @pytest.mark.asyncio
 async def test_update_menu_partial(
     update_menu: dict[str, str],
-    async_client: AsyncClient,
     test_add_and_get_one_menu,
+    async_client: AsyncClient,
 ):
     menu = test_add_and_get_one_menu[0][0]
     url = f"/api/v1/menus/{menu.id}"
@@ -109,8 +109,8 @@ async def test_update_menu_partial(
 
 @pytest.mark.asyncio
 async def test_delete_menu(
-    async_client: AsyncClient,
     test_add_and_get_one_menu,
+    async_client: AsyncClient,
 ):
     menu = test_add_and_get_one_menu[0][0]
     url = f"/api/v1/menus/{menu.id}"
