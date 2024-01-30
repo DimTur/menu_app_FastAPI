@@ -63,9 +63,9 @@ async def test_add_and_get_one_submenu(test_add_and_get_one_menu):
 
     query = select(Submenu)
     result = await session.execute(query)
-    menus = result.all()
+    submenus = result.all()
     await session.close()
-    return menus
+    return submenus
 
 
 @pytest.fixture
