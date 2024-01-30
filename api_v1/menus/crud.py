@@ -7,7 +7,7 @@ from sqlalchemy.orm import selectinload
 
 from core.models import Menu, Submenu
 
-from .schemas import MenuCreate, MenuUpdate, MenuUpdatePartial
+from .schemas import MenuCreate, MenuUpdatePartial
 
 
 async def get_menus(session: AsyncSession) -> list[Menu]:
@@ -53,7 +53,7 @@ async def create_menu(session: AsyncSession, menu_in: MenuCreate) -> Menu:
 async def update_menu(
     session: AsyncSession,
     menu: Menu,
-    menu_update: MenuUpdate | MenuUpdatePartial,
+    menu_update: MenuUpdatePartial,
     partial: bool = False,
 ) -> Menu:
     for title, value in menu_update.model_dump(exclude_unset=partial).items():
