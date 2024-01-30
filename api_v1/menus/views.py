@@ -1,23 +1,45 @@
+import pickle
+
 from fastapi import (
     APIRouter,
     Depends,
     status,
+    HTTPException,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import db_helper
 from . import crud
+
 from .dependencies import menu_by_id
-from .schemas import Menu, MenuCreate, MenuUpdate, MenuUpdatePartial
+from .schemas import Menu, MenuCreate, MenuUpdatePartial
+
+from core.redis.redis_helper import cache
 
 router = APIRouter(tags=["Menus"])
 
 
+class EntityDoesNotExist(Exception):
+    """Raised when entity was not found in database."""
+
+
 @router.get("/", response_model=list[Menu])
 async def get_menus(
+    redis_client: cache = Depends(cache),
     session: AsyncSession = Depends(db_helper.scoped_session_dependency),
 ):
-    return await crud.get_menus(session=session)
+    if (cached_menus := redis_client.get("menus")) is not None:
+        return pickle.loads(cached_menus)
+
+    try:
+        menus = await crud.get_menus(session=session)
+        redis_client.set("menus", pickle.dumps(menus))
+        return menus
+
+    except EntityDoesNotExist:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found!"
+        )
 
 
 @router.post(

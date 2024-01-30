@@ -22,7 +22,7 @@ services:
       retries: 5
 
   redis:
-    image: redis:7
+    image: redis:7.2.4
     container_name: redis_app
     restart: always
     volumes:
@@ -55,6 +55,7 @@ services:
       - "8000:80"
     depends_on:
       - db
+      - redis
     networks:
       - backend_network
 
@@ -68,4 +69,4 @@ volumes:
   db_data:
     name: pg_data_menu
   redis_data:
-    name: redis_data_menu
+    name: redis_data
