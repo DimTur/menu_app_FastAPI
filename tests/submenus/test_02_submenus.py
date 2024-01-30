@@ -24,7 +24,7 @@ async def test_get_empty_submenus(
     response = await async_client.get(url)
 
     assert response.status_code == 200, "Статус ответа не 200"
-    assert response.json() == [], "В ответе не пустой список"
+    assert response.json() == get_empty_submenus, "В ответе не пустой список"
 
 
 @pytest.mark.asyncio
