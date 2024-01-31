@@ -1,8 +1,11 @@
 import pytest
 from httpx import AsyncClient
 from sqlalchemy import select, insert
+from sqlalchemy.orm import selectinload, session
+from sqlalchemy.engine import Result
 
-from core.models import db_helper, Menu
+from core.models import db_helper, Menu, Submenu
+from api_v1.menus.schemas import Menu as MenuSchema
 
 
 @pytest.fixture
@@ -49,6 +52,23 @@ async def test_add_and_get_one_menu():
     menus = result.all()
     await session.close()
     return menus
+
+
+@pytest.fixture
+async def test_get_one_menu_by_id(
+    test_add_and_get_one_menu,
+):
+    session = db_helper.get_scoped_session()
+    menu_id = test_add_and_get_one_menu[0][0].id
+    stmt = (
+        select(Menu)
+        .filter(Menu.id == menu_id)
+        .options(selectinload(Menu.submenus).selectinload(Submenu.dishes))
+    )
+    result: Result = await session.execute(stmt)
+    menu = result.scalar()
+    await session.close()
+    return menu
 
 
 @pytest.fixture
