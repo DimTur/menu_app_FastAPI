@@ -1,6 +1,3 @@
-from decimal import Decimal
-from typing import Any
-
 import pytest
 from httpx import AsyncClient
 
@@ -12,13 +9,7 @@ from tests.submenus.fixtures import (
     test_add_and_get_one_submenu,
     test_get_one_submenu_by_id,
 )
-from tests.dishes.fixtures import (
-    get_empty_dishes,
-    post_dish,
-    test_add_two_dishes,
-    test_add_and_get_one_dish,
-    update_dish,
-)
+from tests.dishes.fixtures import test_add_two_dishes
 
 
 @pytest.mark.usefixtures("test_add_two_dishes")

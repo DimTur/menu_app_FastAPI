@@ -1,11 +1,10 @@
 import pytest
 from httpx import AsyncClient
 from sqlalchemy import select, insert
-from sqlalchemy.orm import selectinload, session
+from sqlalchemy.orm import selectinload
 from sqlalchemy.engine import Result
 
 from core.models import db_helper, Menu, Submenu
-from api_v1.menus.schemas import Menu as MenuSchema
 
 
 @pytest.fixture

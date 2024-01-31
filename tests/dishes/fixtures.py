@@ -5,7 +5,6 @@ from httpx import AsyncClient
 from sqlalchemy import select, insert
 
 from core.models import db_helper, Dish
-from tests.menus.fixtures import test_add_and_get_one_menu
 from tests.submenus.fixtures import test_add_and_get_one_submenu
 
 

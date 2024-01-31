@@ -3,7 +3,7 @@ from httpx import AsyncClient
 
 from tests.conftest import async_client
 
-from fixtures import (
+from .fixtures import (
     get_empty_menus,
     post_menu,
     test_add_and_get_one_menu,
