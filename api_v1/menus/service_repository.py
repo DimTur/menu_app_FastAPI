@@ -4,7 +4,7 @@ from typing import Annotated
 from fastapi import Depends, Path
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api_v1.menus.cache_repository import CacheRepository
+from core.redis.cache_repository import CacheRepository
 from core.models import Menu, db_helper
 from . import crud
 from .schemas import MenuCreate, MenuUpdatePartial
@@ -31,10 +31,10 @@ class MenuService:
     async def create_menu(self, menu_in: MenuCreate) -> Menu:
         """Создание нового меню"""
         menu = await crud.create_menu(session=self.session, menu_in=menu_in)
-        await self.cache_repo.create_update_menu_cache(menu)
+        await self.cache_repo.create_menu_cache(menu)
         return menu
 
-    async def get_menu_by_id(self, menu_id: Annotated[uuid.UUID, Path]) -> Menu | None:
+    async def get_menu_by_id(self, menu_id: uuid.UUID) -> Menu | None:
         """Получение меню по id"""
         cached_menu = await self.cache_repo.get_menu_from_cache(menu_id=menu_id)
         if cached_menu:
@@ -49,16 +49,16 @@ class MenuService:
         menu_update: MenuUpdatePartial,
     ) -> Menu:
         """Обновление меню"""
-        menu = await crud.update_menu(
+        updated_menu = await crud.update_menu(
             session=self.session,
             menu=menu,
             menu_update=menu_update,
             partial=True,
         )
-        await self.cache_repo.create_update_menu_cache(menu)
-        return menu
+        await self.cache_repo.update_menu_cache(updated_menu)
+        return updated_menu
 
     async def delete_menu(self, menu: Menu) -> None:
         """Удаление меню по id"""
-        await self.cache_repo.delete_menu(menu_id=menu.id)
+        await self.cache_repo.delete_menu_from_cache(menu_id=menu.id)
         await crud.delete_menu(session=self.session, menu=menu)

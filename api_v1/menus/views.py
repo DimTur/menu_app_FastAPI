@@ -5,7 +5,7 @@ from fastapi import (
 )
 
 from .service_repository import MenuService
-from .dependencies import menu_by_id
+from .dependencies import menu_by_id, menu_by_id_not_from_cache
 from .schemas import Menu, MenuCreate, MenuUpdatePartial
 
 router = APIRouter(tags=["Menus"])
@@ -38,7 +38,7 @@ async def get_menu_by_id(
 @router.patch("/{menu_id}")
 async def update_menu_partial(
     menu_update: MenuUpdatePartial,
-    menu: Menu = Depends(menu_by_id),
+    menu: Menu = Depends(menu_by_id_not_from_cache),
     repo: MenuService = Depends(),
 ):
     return await repo.update_menu(menu=menu, menu_update=menu_update)
