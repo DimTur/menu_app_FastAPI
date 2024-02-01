@@ -55,7 +55,7 @@ class CacheRepository:
         self,
         menu_id: uuid.UUID,
         submenus: list[Submenu],
-    ):
+    ) -> None:
         """Запись всех подменю в кэш"""
         await self.cacher.set(
             f"/menus/{menu_id}/submenus/",
@@ -80,8 +80,8 @@ class CacheRepository:
     ) -> None:
         """Работа с кэшем при создании нового подменю"""
         await self.delete_all_submenus_from_cache(menu_id=menu_id)
-        await self.delete_all_menus_from_cache()
-        await self.cacher.set(f"/menus/{menu_id}/submenus/", pickle.dumps(submenu))
+        await self.delete_menu_from_cache(menu_id=menu_id)
+        await self.set_submenu_to_cache(menu_id=menu_id, submenu=submenu)
 
     async def set_submenu_to_cache(
         self,
@@ -124,4 +124,6 @@ class CacheRepository:
     async def delete_submenu_from_cache(self, submenu: Submenu) -> None:
         """Работа с кэшем при удалении подменю"""
         await self.cacher.delete(f"menu_{submenu.menu_id}")
+        await self.delete_all_submenus_from_cache(submenu.menu_id)
+        await self.delete_menu_from_cache(menu_id=submenu.menu_id)
         await self.delete_all_menus_from_cache()

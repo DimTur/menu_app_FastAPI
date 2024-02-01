@@ -7,15 +7,12 @@ from fastapi import (
     Path,
     status,
 )
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.models import db_helper
-from .dependencies import submenu_by_id
+from .dependencies import submenu_by_id, submenu_by_id_not_from_cache
 from .service_repository import SubmenuService
 
 router = APIRouter(tags=["Submenus"])
 
-from . import crud
 from .schemas import Submenu, SubmenuBase, SubmenuCreate, SubmenuUpdatePartial
 
 
@@ -35,13 +32,9 @@ async def get_submenus(
 async def create_submenu(
     menu_id: Annotated[uuid.UUID, Path],
     submenu_in: SubmenuCreate,
-    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+    repo: SubmenuService = Depends(),
 ):
-    return await crud.create_submenu(
-        session=session,
-        menu_id=menu_id,
-        submenu_in=submenu_in,
-    )
+    return await repo.create_submenu(menu_id=menu_id, submenu_in=submenu_in)
 
 
 @router.get("/{submenu_id}", response_model=Submenu)
@@ -54,23 +47,15 @@ async def get_submenu_bu_id(
 @router.patch("/{submenu_id}")
 async def update_submenu_partial(
     submenu_update: SubmenuUpdatePartial,
-    submenu: Submenu = Depends(submenu_by_id),
-    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+    submenu: Submenu = Depends(submenu_by_id_not_from_cache),
+    repo: SubmenuService = Depends(),
 ):
-    return await crud.update_submenu(
-        session=session,
-        submenu=submenu,
-        submenu_update=submenu_update,
-        partial=True,
-    )
+    return await repo.update_submenu(submenu=submenu, submenu_update=submenu_update)
 
 
 @router.delete("/{submenu_id}")
 async def delete_submenu(
-    submenu: Submenu = Depends(submenu_by_id),
-    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+    submenu: Submenu = Depends(submenu_by_id_not_from_cache),
+    repo: SubmenuService = Depends(),
 ):
-    await crud.delete_submenu(
-        session=session,
-        submenu=submenu,
-    )
+    return await repo.delete_submenu(submenu=submenu)
