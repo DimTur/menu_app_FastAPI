@@ -23,63 +23,27 @@ async def get_menus(repo: MenuService = Depends()):
     return await repo.get_all_menus()
 
 
-#
-# async def get_menus_from_cache(redis_client: cache):
-#     if (cached_menus := redis_client.get("menus")) is not None:
-#         return pickle.loads(cached_menus)
-#
-#
-# async def set_menus_to_cache(redis_client: cache, menus: list[Menu]):
-#     await redis_client.set("menus", pickle.dumps(menus))
-#     return True
-#
-#
-# async def get_all_menus(
-#     redis_client: cache,
-#     session: AsyncSession,
-# ):
-#     cached_menus = await get_menus_from_cache(redis_client=redis_client)
-#     if cached_menus is not None:
-#         return cached_menus
-#
-#     menus = await crud.get_menus(session=session)
-#     await set_menus_to_cache(redis_client=redis_client, menus=menus)
-#     return menus
-#
-#
-# @router.get("/", response_model=list[Menu])
-# async def get_menus(
-#     redis_client: cache = Depends(cache),
-#     session: AsyncSession = Depends(db_helper.scoped_session_dependency),
-# ):
-#     return await get_all_menus(redis_client=redis_client, session=session)
-
-
-# @router.get("/", response_model=list[Menu])
-# async def get_menus(
-#     redis_client: cache = Depends(cache),
-#     session: AsyncSession = Depends(db_helper.scoped_session_dependency),
-# ):
-#     if (cached_menus := await redis_client.get("menus")) is not None:
-#         return pickle.loads(cached_menus)
-#
-#     menus = await crud.get_menus(session=session)
-#     await redis_client.set("menus", pickle.dumps(menus))
-#     return menus
-
-
 @router.post(
     "/",
     response_model=Menu,
     status_code=status.HTTP_201_CREATED,
 )
-async def create_menu(
-    menu_in: MenuCreate,
-    redis_client: cache = Depends(cache),
-    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
-):
-    redis_client.delete("menus")
-    return await crud.create_menu(session=session, menu_in=menu_in)
+async def create_menu(menu_in: MenuCreate, repo: MenuService = Depends()):
+    return await repo.create_menu(menu_in)
+
+
+# @router.post(
+#     "/",
+#     response_model=Menu,
+#     status_code=status.HTTP_201_CREATED,
+# )
+# async def create_menu(
+#     menu_in: MenuCreate,
+#     redis_client: cache = Depends(cache),
+#     session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+# ):
+#     redis_client.delete("menus")
+#     return await crud.create_menu(session=session, menu_in=menu_in)
 
 
 @router.get("/{menu_id}", response_model=Menu)
