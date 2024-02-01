@@ -25,6 +25,16 @@ class CacheRepository:
         await self.delete_all_menus_from_cache()
         await self.cacher.set(f"menu_{menu.id}", pickle.dumps(menu))
 
+    async def set_menu_to_cache(self, menu: Menu) -> None:
+        """Запись меню в кеш"""
+        await self.cacher.set(f"menu_{menu.id}", pickle.dumps(menu))
+
+    async def get_menu_from_cache(self, menu_id: Menu.id) -> Menu | None:
+        """Получение меню по id из кэша"""
+        if (cached_menu := await self.cacher.get(f"menu_{menu_id}")) is not None:
+            return pickle.loads(cached_menu)
+        return None
+
     async def delete_all_menus_from_cache(self) -> None:
         """Удаление всех меню из кэша"""
         await self.cacher.delete("menus")

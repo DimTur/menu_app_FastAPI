@@ -1,4 +1,7 @@
-from fastapi import Depends
+import uuid
+from typing import Annotated
+
+from fastapi import Depends, Path
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api_v1.menus.cache import CacheRepository
@@ -26,7 +29,16 @@ class MenuService:
         return menus
 
     async def create_menu(self, menu_in: MenuCreate) -> Menu:
-        """ "Создание нового меню"""
+        """Создание нового меню"""
         menu = await crud.create_menu(session=self.session, menu_in=menu_in)
         await self.cache_repo.create_update_menu_cache(menu)
+        return menu
+
+    async def get_menu_by_id(self, menu_id: Annotated[uuid.UUID, Path]) -> Menu | None:
+        """Получение меню по id"""
+        cached_menu = await self.cache_repo.get_menu_from_cache(menu_id=menu_id)
+        if cached_menu:
+            return cached_menu
+        menu = await crud.get_menu_by_id(session=self.session, menu_id=menu_id)
+        await self.cache_repo.set_menu_to_cache(menu=menu)
         return menu
