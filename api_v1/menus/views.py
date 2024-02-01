@@ -9,10 +9,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import db_helper
 from . import crud
-
 from .dependencies import menu_by_id
 from .schemas import Menu, MenuCreate, MenuUpdatePartial
-
 from core.redis import cache
 
 router = APIRouter(tags=["Menus"])
