@@ -1,6 +1,5 @@
 import pickle
 
-from redis import Redis
 from fastapi import Depends
 
 from core.models import Menu
@@ -13,18 +12,15 @@ class CacheRepository:
 
     async def set_list_menus_cache(self, items: list[Menu]) -> None:
         """Запись всех меню в кэш"""
-        await self.cacher.set("list_menus", pickle.dumps(items))
-
-    # menus = await crud.get_menus(session=session)
-    # redis_client.set("menus", pickle.dumps(menus))
-    # return menus
+        await self.cacher.set("menus", pickle.dumps(items))
 
     async def get_list_menus_cache(self) -> list[Menu] | None:
         """Получение всех меню из кэша"""
-        if (cached_menus := self.cacher.get("list_menus")) is not None:
-            return pickle.loads(cached_menus)
-        # cache = self.cacher.get("/")
-        # if cache:
-        #     items = pickle.loads(cache)
-        #     return items
+        cached_menus = await self.cacher.get("menus")
+        if cached_menus is not None:
+            items = await pickle.loads(cached_menus)
+            return items
         return None
+        # if (cached_menus := await self.cacher.get("menus")) is not None:
+        #     return pickle.loads(cached_menus)
+        # return None
