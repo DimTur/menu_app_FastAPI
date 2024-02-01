@@ -11,6 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import db_helper
 from .dependencies import submenu_by_id
+from .service_repository import SubmenuService
 
 router = APIRouter(tags=["Submenus"])
 
@@ -21,9 +22,9 @@ from .schemas import Submenu, SubmenuBase, SubmenuCreate, SubmenuUpdatePartial
 @router.get("/", response_model=list[Submenu])
 async def get_submenus(
     menu_id: Annotated[uuid.UUID, Path],
-    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+    repo: SubmenuService = Depends(),
 ):
-    return await crud.get_submenus(session=session, menu_id=menu_id)
+    return await repo.get_all_submenus(menu_id=menu_id)
 
 
 @router.post(
