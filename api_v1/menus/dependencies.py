@@ -1,5 +1,5 @@
 import uuid
-import pickle
+
 from typing import Annotated
 
 from fastapi import (
@@ -8,17 +8,10 @@ from fastapi import (
     HTTPException,
     status,
 )
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.models import db_helper, Menu
-from core.redis import cache
+from core.models import Menu
 
-from . import crud
-from .cache_crud import MenuService
-
-
-class EntityDoesNotExist(Exception):
-    """Raised when entity was not found in database."""
+from .service_repository import MenuService
 
 
 async def menu_by_id(

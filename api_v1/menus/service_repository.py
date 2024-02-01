@@ -4,7 +4,7 @@ from typing import Annotated
 from fastapi import Depends, Path
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api_v1.menus.cache import CacheRepository
+from api_v1.menus.cache_repository import CacheRepository
 from core.models import Menu, db_helper
 from . import crud
 from .schemas import MenuCreate, MenuUpdatePartial
@@ -45,9 +45,9 @@ class MenuService:
 
     async def update_menu(
         self,
-        menu: get_menu_by_id,
+        menu: Menu,
         menu_update: MenuUpdatePartial,
-    ):
+    ) -> Menu:
         """Обновление меню"""
         menu = await crud.update_menu(
             session=self.session,
@@ -57,3 +57,8 @@ class MenuService:
         )
         await self.cache_repo.create_update_menu_cache(menu)
         return menu
+
+    async def delete_menu(self, menu: Menu) -> None:
+        """Удаление меню по id"""
+        await self.cache_repo.delete_menu(menu_id=menu.id)
+        await crud.delete_menu(session=self.session, menu=menu)

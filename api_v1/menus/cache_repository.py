@@ -38,3 +38,8 @@ class CacheRepository:
     async def delete_all_menus_from_cache(self) -> None:
         """Удаление всех меню из кэша"""
         await self.cacher.delete("menus")
+
+    async def delete_menu(self, menu_id: Menu.id) -> None:
+        """Работа с кэшем при удалении меню"""
+        await self.cacher.delete(f"menu_{menu_id}")
+        await self.delete_all_menus_from_cache()

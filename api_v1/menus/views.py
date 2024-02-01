@@ -1,22 +1,12 @@
-import pickle
-import uuid
-from typing import Annotated
-
 from fastapi import (
     APIRouter,
     Depends,
     status,
-    Path,
 )
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.models import db_helper
-from . import crud
-
-from .cache_crud import MenuService
+from .service_repository import MenuService
 from .dependencies import menu_by_id
 from .schemas import Menu, MenuCreate, MenuUpdatePartial
-from core.redis import cache
 
 router = APIRouter(tags=["Menus"])
 
@@ -57,13 +47,6 @@ async def update_menu_partial(
 @router.delete("/{menu_id}")
 async def delete_menu(
     menu: Menu = Depends(menu_by_id),
-    redis_client: cache = Depends(cache),
-    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+    repo: MenuService = Depends(),
 ) -> None:
-    await crud.delete_menu(
-        session=session,
-        menu=menu,
-    )
-    redis_client.delete(f"menu_{menu.id}")
-    menus = await crud.get_menus(session=session)
-    redis_client.set("menus", pickle.dumps(menus))
+    return await repo.delete_menu(menu=menu)
