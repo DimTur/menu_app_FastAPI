@@ -13,7 +13,7 @@ from .service_repository import SubmenuService
 
 router = APIRouter(tags=["Submenus"])
 
-from .schemas import Submenu, SubmenuBase, SubmenuCreate, SubmenuUpdatePartial
+from .schemas import Submenu, SubmenuCreate, SubmenuUpdatePartial
 
 
 @router.get("/", response_model=list[Submenu])

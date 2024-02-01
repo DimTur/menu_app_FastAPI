@@ -1,7 +1,6 @@
 import uuid
-from typing import Annotated
 
-from fastapi import Depends, Path
+from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.redis.cache_repository import CacheRepository
