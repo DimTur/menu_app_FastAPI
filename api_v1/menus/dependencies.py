@@ -14,6 +14,7 @@ from core.models import db_helper, Menu
 from core.redis import cache
 
 from . import crud
+from .cache_crud import MenuService
 
 
 class EntityDoesNotExist(Exception):
@@ -22,19 +23,13 @@ class EntityDoesNotExist(Exception):
 
 async def menu_by_id(
     menu_id: Annotated[uuid.UUID, Path],
-    redis_client: cache = Depends(cache),
-    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+    repo: MenuService = Depends(),
 ) -> Menu:
-    if (cached_menu := redis_client.get(f"menu_{menu_id}")) is not None:
-        return pickle.loads(cached_menu)
-    try:
-        menu = await crud.get_menu_by_id(session=session, menu_id=menu_id)
-        redis_client.set(f"menu_{menu_id}", pickle.dumps(menu))
-
+    menu = await repo.get_menu_by_id(menu_id=menu_id)
+    if menu is not None:
         return menu
 
-    except EntityDoesNotExist:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"menu not found",
-        )
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=f"menu not found",
+    )

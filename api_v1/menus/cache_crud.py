@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from api_v1.menus.cache import CacheRepository
 from core.models import Menu, db_helper
 from . import crud
-from .schemas import MenuCreate
+from .schemas import MenuCreate, MenuUpdatePartial
 
 
 class MenuService:
@@ -41,4 +41,19 @@ class MenuService:
             return cached_menu
         menu = await crud.get_menu_by_id(session=self.session, menu_id=menu_id)
         await self.cache_repo.set_menu_to_cache(menu=menu)
+        return menu
+
+    async def update_menu(
+        self,
+        menu: get_menu_by_id,
+        menu_update: MenuUpdatePartial,
+    ):
+        """Обновление меню"""
+        menu = await crud.update_menu(
+            session=self.session,
+            menu=menu,
+            menu_update=menu_update,
+            partial=True,
+        )
+        await self.cache_repo.create_update_menu_cache(menu)
         return menu

@@ -40,28 +40,18 @@ async def create_menu(
 
 @router.get("/{menu_id}", response_model=Menu)
 async def get_menu_by_id(
-    menu_id: Annotated[uuid.UUID, Path],
-    repo: MenuService = Depends(),
+    menu: Menu = Depends(menu_by_id),
 ):
-    return await repo.get_menu_by_id(menu_id=menu_id)
+    return menu
 
 
 @router.patch("/{menu_id}")
 async def update_menu_partial(
     menu_update: MenuUpdatePartial,
     menu: Menu = Depends(menu_by_id),
-    redis_client: cache = Depends(cache),
-    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+    repo: MenuService = Depends(),
 ):
-    updated_menu = await crud.update_menu(
-        session=session,
-        menu=menu,
-        menu_update=menu_update,
-        partial=True,
-    )
-    redis_client.delete(f"menu_{menu.id}")
-
-    return updated_menu
+    return await repo.update_menu(menu=menu, menu_update=menu_update)
 
 
 @router.delete("/{menu_id}")
