@@ -23,7 +23,7 @@ class SubmenuService:
         self,
         menu_id: uuid.UUID,
     ) -> list[Submenu]:
-        """Получения списка подменю"""
+        """Возвращает список всех подменю для блюда"""
         cached_submenus = await self.cache_repo.get_list_submenus_cache(menu_id)
         if cached_submenus:
             return cached_submenus
@@ -53,7 +53,7 @@ class SubmenuService:
         menu_id: Annotated[uuid.UUID, Path],
         submenu_id: Annotated[uuid.UUID, Path],
     ) -> Submenu | None:
-        """Получение подменю по id"""
+        """Возвращает подменю по его id"""
         cached_submenu = await self.cache_repo.get_submenu_from_cache(
             menu_id=menu_id,
             submenu_id=submenu_id,
@@ -73,7 +73,7 @@ class SubmenuService:
         submenu: Submenu,
         submenu_update: SubmenuUpdatePartial,
     ) -> Submenu:
-        """Обновление подменю"""
+        """Обновляет подменю по его id"""
         submenu = await crud.update_submenu(
             session=self.session,
             submenu=submenu,
@@ -87,6 +87,6 @@ class SubmenuService:
         return submenu
 
     async def delete_submenu(self, submenu: Submenu) -> None:
-        """Удаление подменю по id"""
+        """Удаляет подменю по его id"""
         await self.cache_repo.delete_submenu_from_cache(submenu=submenu)
         await crud.delete_submenu(session=self.session, submenu=submenu)
