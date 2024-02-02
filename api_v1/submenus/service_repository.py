@@ -50,8 +50,8 @@ class SubmenuService:
 
     async def get_submenu_by_id(
         self,
-        menu_id: Annotated[uuid.UUID, Path],
-        submenu_id: Annotated[uuid.UUID, Path],
+        menu_id: uuid.UUID,
+        submenu_id: uuid.UUID,
     ) -> Submenu | None:
         """Возвращает подменю по его id"""
         cached_submenu = await self.cache_repo.get_submenu_from_cache(
