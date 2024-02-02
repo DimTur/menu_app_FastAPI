@@ -12,9 +12,30 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.models import db_helper, Dish
 
 from . import crud
+from .service_repository import DishService
 
 
 async def dish_by_id(
+    menu_id: Annotated[uuid.UUID, Path],
+    submenu_id: Annotated[uuid.UUID, Path],
+    dish_id: Annotated[uuid.UUID, Path],
+    repo: DishService = Depends(),
+) -> Dish:
+    dish = await repo.get_dish_by_id(
+        menu_id=menu_id,
+        submenu_id=submenu_id,
+        dish_id=dish_id,
+    )
+    if dish is not None:
+        return dish
+
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=f"dish not found",
+    )
+
+
+async def dish_by_id_not_from_cache(
     menu_id: Annotated[uuid.UUID, Path],
     submenu_id: Annotated[uuid.UUID, Path],
     dish_id: Annotated[uuid.UUID, Path],
