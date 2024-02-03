@@ -41,8 +41,8 @@ async def get_dish_by_id(
         .where(Dish.id == dish_id)
     )
     result: Result = await session.execute(stmt)
-    submenu = result.scalar()
-    return submenu
+    dish = result.scalar()
+    return dish
 
 
 async def create_dish(

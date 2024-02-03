@@ -1,8 +1,11 @@
 import pytest
 from httpx import AsyncClient
 
+from api_v1.menus.views import get_menu_by_id
+from api_v1.submenus.views import get_submenu_bu_id
 from tests.dishes.fixtures import test_add_two_dishes
 from tests.menus.fixtures import test_add_and_get_one_menu, test_get_one_menu_by_id
+from tests.service import reverse
 from tests.submenus.fixtures import (
     test_add_and_get_one_submenu,
     test_get_one_submenu_by_id,
@@ -17,8 +20,7 @@ async def test_get_menu_by_id(
     async_client: AsyncClient,
 ):
     menu = test_get_one_menu_by_id
-    url = f"/api/v1/menus/{menu.id}"
-    response = await async_client.get(url)
+    response = await async_client.get(reverse(get_menu_by_id, menu_id=menu.id))
 
     assert response.status_code == 200, "Статус ответа не 200"
     assert response.json()["id"] == str(
@@ -48,8 +50,13 @@ async def test_get_submenu_by_id(
 ):
     menu = test_get_one_menu_by_id
     submenu = test_get_one_submenu_by_id
-    url = f"/api/v1/menus/{menu.id}/submenus/{submenu.id}"
-    response = await async_client.get(url)
+    response = await async_client.get(
+        reverse(
+            get_submenu_bu_id,
+            menu_id=menu.id,
+            submenu_id=submenu.id,
+        )
+    )
 
     assert response.status_code == 200, "Статус ответа не 200"
     assert response.json()["id"] == str(

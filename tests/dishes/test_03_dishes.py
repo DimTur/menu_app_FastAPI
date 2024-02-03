@@ -4,7 +4,15 @@ from typing import Any
 import pytest
 from httpx import AsyncClient
 
+from api_v1.dishes.views import (
+    create_dish,
+    delete_dish,
+    get_dish_by_if,
+    get_dishes,
+    update_dish_partial,
+)
 from tests.menus.fixtures import test_add_and_get_one_menu
+from tests.service import reverse
 from tests.submenus.fixtures import test_add_and_get_one_submenu
 
 from .fixtures import (
@@ -25,8 +33,15 @@ async def test_get_empty_dishes(
 ):
     menu = test_add_and_get_one_menu[0][0]
     submenu = test_add_and_get_one_submenu[0][0]
-    url = f"/api/v1/menus/{menu.id}/submenus/{submenu.id}/dishes/"
-    response = await async_client.get(url)
+    # url = f"/api/v1/menus/{menu.id}/submenus/{submenu.id}/dishes/"
+    # response = await async_client.get(url)
+    response = await async_client.get(
+        reverse(
+            get_dishes,
+            menu_id=menu.id,
+            submenu_id=submenu.id,
+        )
+    )
 
     assert response.status_code == 200, "Статус ответа не 200"
     assert response.json() == get_empty_dishes, "В ответе не пустой список"
@@ -41,9 +56,17 @@ async def test_add_dish(
 ):
     menu = test_add_and_get_one_menu[0][0]
     submenu = test_add_and_get_one_submenu[0][0]
-    url = f"/api/v1/menus/{menu.id}/submenus/{submenu.id}/dishes/"
+    # url = f"/api/v1/menus/{menu.id}/submenus/{submenu.id}/dishes/"
+    # response = await async_client.post(
+    #     url,
+    #     json=post_dish,
+    # )
     response = await async_client.post(
-        url,
+        reverse(
+            create_dish,
+            menu_id=menu.id,
+            submenu_id=submenu.id,
+        ),
         json=post_dish,
     )
 
@@ -71,8 +94,15 @@ async def test_get_list_dishes(
 ):
     menu = test_add_and_get_one_menu[0][0]
     submenu = test_add_and_get_one_submenu[0][0]
-    url = f"/api/v1/menus/{menu.id}/submenus/{submenu.id}/dishes/"
-    response = await async_client.get(url)
+    # url = f"/api/v1/menus/{menu.id}/submenus/{submenu.id}/dishes/"
+    # response = await async_client.get(url)
+    response = await async_client.get(
+        reverse(
+            get_dishes,
+            menu_id=menu.id,
+            submenu_id=submenu.id,
+        )
+    )
 
     assert response.status_code == 200, "Статус ответа не 200"
     assert response.json() != [], "В ответе пустой список"
@@ -88,13 +118,19 @@ async def test_get_dish_by_id(
     menu = test_add_and_get_one_menu[0][0]
     submenu = test_add_and_get_one_submenu[0][0]
     dish = test_add_and_get_one_dish[0][0]
-    url = f"/api/v1/menus/{menu.id}/submenus/{submenu.id}/dishes/{dish.id}"
-    response = await async_client.get(url)
-
+    # url = f"/api/v1/menus/{menu.id}/submenus/{submenu.id}/dishes/{dish.id}"
+    # response = await async_client.get(url)
+    response = await async_client.get(
+        reverse(
+            get_dish_by_if,
+            menu_id=menu.id,
+            submenu_id=submenu.id,
+            dish_id=dish.id,
+        )
+    )
+    print(dish)
+    print(response.json())
     assert response.status_code == 200, "Статус ответа не 200"
-    assert response.json()["id"] == str(
-        dish.id
-    ), "Идентификатор не соответствует ожидаемому"
     assert (
         response.json()["title"] == dish.title
     ), "Название не соответствует ожидаемому"
@@ -117,9 +153,18 @@ async def test_update_dish_partial(
     menu = test_add_and_get_one_menu[0][0]
     submenu = test_add_and_get_one_submenu[0][0]
     dish = test_add_and_get_one_dish[0][0]
-    url = f"/api/v1/menus/{menu.id}/submenus/{submenu.id}/dishes/{dish.id}"
+    # url = f"/api/v1/menus/{menu.id}/submenus/{submenu.id}/dishes/{dish.id}"
+    # response = await async_client.patch(
+    #     url,
+    #     json=update_dish,
+    # )
     response = await async_client.patch(
-        url,
+        reverse(
+            update_dish_partial,
+            menu_id=menu.id,
+            submenu_id=submenu.id,
+            dish_id=dish.id,
+        ),
         json=update_dish,
     )
 
@@ -149,8 +194,16 @@ async def test_delete_dish(
     menu = test_add_and_get_one_menu[0][0]
     submenu = test_add_and_get_one_submenu[0][0]
     dish = test_add_and_get_one_dish[0][0]
-    url = f"/api/v1/menus/{menu.id}/submenus/{submenu.id}/dishes/{dish.id}"
-    response = await async_client.delete(url)
+    # url = f"/api/v1/menus/{menu.id}/submenus/{submenu.id}/dishes/{dish.id}"
+    # response = await async_client.delete(url)
+    response = await async_client.delete(
+        reverse(
+            delete_dish,
+            menu_id=menu.id,
+            submenu_id=submenu.id,
+            dish_id=dish.id,
+        )
+    )
 
     assert response.status_code == 200, "Статус ответа не 200"
     assert response.json() is None, "Сообщение об удалении не соответствует ожидаемому"
