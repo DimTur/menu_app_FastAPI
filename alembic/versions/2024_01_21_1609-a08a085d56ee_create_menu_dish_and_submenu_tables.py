@@ -1,7 +1,7 @@
 """Create menu, dish and submenu tables
 
 Revision ID: a08a085d56ee
-Revises: 
+Revises:
 Create Date: 2024-01-21 16:09:38.244840
 
 """
