@@ -1,7 +1,8 @@
 import uuid
 from decimal import Decimal
-from typing import Annotated, Union, Optional
-from annotated_types import MinLen, MaxLen
+from typing import Annotated, Optional, Union
+
+from annotated_types import MaxLen, MinLen
 from pydantic import BaseModel, ConfigDict
 
 

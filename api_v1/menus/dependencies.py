@@ -1,18 +1,12 @@
 import uuid
-
 from typing import Annotated
 
-from fastapi import (
-    Path,
-    Depends,
-    HTTPException,
-    status,
-)
+from fastapi import Depends, HTTPException, Path, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import Menu, db_helper
-from .crud import get_menu_by_id
 
+from .crud import get_menu_by_id
 from .service_repository import MenuService
 
 

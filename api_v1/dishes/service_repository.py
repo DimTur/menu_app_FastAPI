@@ -3,8 +3,9 @@ import uuid
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.redis.cache_repository import CacheRepository
 from core.models import db_helper
+from core.redis.cache_repository import CacheRepository
+
 from . import crud
 from .schemas import Dish, DishCreate, DishUpdatePartial
 

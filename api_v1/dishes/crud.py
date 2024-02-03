@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
 from api_v1.dishes.schemas import DishCreate, DishUpdate, DishUpdatePartial
-from core.models import Dish, Submenu, Menu
+from core.models import Dish, Menu, Submenu
 
 
 async def get_dishes(

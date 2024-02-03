@@ -1,15 +1,12 @@
 import pytest
 from httpx import AsyncClient
 
-from tests.menus.fixtures import (
-    test_add_and_get_one_menu,
-    test_get_one_menu_by_id,
-)
+from tests.dishes.fixtures import test_add_two_dishes
+from tests.menus.fixtures import test_add_and_get_one_menu, test_get_one_menu_by_id
 from tests.submenus.fixtures import (
     test_add_and_get_one_submenu,
     test_get_one_submenu_by_id,
 )
-from tests.dishes.fixtures import test_add_two_dishes
 
 
 @pytest.mark.usefixtures("test_add_two_dishes")

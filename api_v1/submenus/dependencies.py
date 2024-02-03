@@ -1,17 +1,12 @@
 import uuid
 from typing import Annotated
 
-from fastapi import (
-    Path,
-    Depends,
-    HTTPException,
-    status,
-)
+from fastapi import Depends, HTTPException, Path, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import Submenu, db_helper
-from .crud import get_submenu_by_id
 
+from .crud import get_submenu_by_id
 from .service_repository import SubmenuService
 
 

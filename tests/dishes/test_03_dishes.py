@@ -6,11 +6,12 @@ from httpx import AsyncClient
 
 from tests.menus.fixtures import test_add_and_get_one_menu
 from tests.submenus.fixtures import test_add_and_get_one_submenu
+
 from .fixtures import (
     get_empty_dishes,
     post_dish,
-    test_add_two_dishes,
     test_add_and_get_one_dish,
+    test_add_two_dishes,
     update_dish,
 )
 

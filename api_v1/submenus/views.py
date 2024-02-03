@@ -1,12 +1,7 @@
 import uuid
 from typing import Annotated
 
-from fastapi import (
-    APIRouter,
-    Depends,
-    Path,
-    status,
-)
+from fastapi import APIRouter, Depends, Path, status
 
 from .dependencies import submenu_by_id, submenu_by_id_not_from_cache
 from .service_repository import SubmenuService

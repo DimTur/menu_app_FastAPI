@@ -3,7 +3,7 @@ import uuid
 
 from fastapi import Depends, HTTPException, status
 
-from core.models import Menu, Submenu, Dish
+from core.models import Dish, Menu, Submenu
 from core.redis.redis_helper import cache
 
 

@@ -5,7 +5,8 @@ from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload, selectinload
 
-from core.models import Submenu, Menu
+from core.models import Menu, Submenu
+
 from .schemas import SubmenuCreate, SubmenuUpdate, SubmenuUpdatePartial
 
 

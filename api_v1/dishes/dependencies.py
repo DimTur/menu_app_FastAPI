@@ -1,15 +1,10 @@
 import uuid
 from typing import Annotated
 
-from fastapi import (
-    Path,
-    Depends,
-    HTTPException,
-    status,
-)
+from fastapi import Depends, HTTPException, Path, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.models import db_helper, Dish
+from core.models import Dish, db_helper
 
 from . import crud
 from .service_repository import DishService

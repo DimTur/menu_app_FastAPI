@@ -4,11 +4,12 @@ import pytest
 from httpx import AsyncClient
 
 from tests.menus.fixtures import test_add_and_get_one_menu
+
 from .fixtures import (
     get_empty_submenus,
     post_submenu,
-    test_add_two_submenus,
     test_add_and_get_one_submenu,
+    test_add_two_submenus,
     update_submenu,
 )
 

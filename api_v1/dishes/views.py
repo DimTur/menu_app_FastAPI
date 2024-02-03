@@ -1,12 +1,7 @@
 import uuid
 from typing import Annotated
 
-from fastapi import (
-    APIRouter,
-    Depends,
-    Path,
-    status,
-)
+from fastapi import APIRouter, Depends, Path, status
 
 from .dependencies import dish_by_id, dish_by_id_not_from_cache
 from .service_repository import DishService

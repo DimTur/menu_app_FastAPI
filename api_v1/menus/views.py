@@ -1,12 +1,8 @@
-from fastapi import (
-    APIRouter,
-    Depends,
-    status,
-)
+from fastapi import APIRouter, Depends, status
 
-from .service_repository import MenuService
 from .dependencies import menu_by_id, menu_by_id_not_from_cache
 from .schemas import Menu, MenuCreate, MenuUpdatePartial
+from .service_repository import MenuService
 
 router = APIRouter(tags=["Menus"])
 

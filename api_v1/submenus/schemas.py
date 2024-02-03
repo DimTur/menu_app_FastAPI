@@ -1,6 +1,7 @@
 import uuid
 from typing import Annotated
-from annotated_types import MinLen, MaxLen
+
+from annotated_types import MaxLen, MinLen
 from pydantic import BaseModel, ConfigDict
 
 

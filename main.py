@@ -1,11 +1,9 @@
 from contextlib import asynccontextmanager
 
+import uvicorn
 from fastapi import FastAPI
 
-import uvicorn
-
 from api_v1 import router as router_v1
-
 from core.config import settings
 
 
