@@ -95,7 +95,7 @@ class DishService:
 
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"dish not found",
+                detail="dish not found",
             )
         except AttributeError:
             raise HTTPException(

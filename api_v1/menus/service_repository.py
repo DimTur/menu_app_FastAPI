@@ -47,7 +47,7 @@ class MenuService:
 
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"menu not found",
+            detail="menu not found",
         )
 
     async def update_menu(

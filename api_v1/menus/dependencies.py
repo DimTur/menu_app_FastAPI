@@ -29,5 +29,5 @@ async def menu_by_id_not_from_cache(
 
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
-        detail=f"menu not found",
+        detail="menu not found",
     )

@@ -35,5 +35,5 @@ async def submenu_by_id_not_from_cache(
 
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
-        detail=f"submenu not found",
+        detail="submenu not found",
     )

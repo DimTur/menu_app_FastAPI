@@ -2,7 +2,7 @@ from asyncio import current_task
 from contextlib import asynccontextmanager
 from typing import AsyncIterator
 
-from sqlalchemy import NullPool, QueuePool, pool
+from sqlalchemy import QueuePool, pool
 from sqlalchemy.ext.asyncio import (
     AsyncConnection,
     AsyncSession,

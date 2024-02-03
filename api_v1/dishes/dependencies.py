@@ -42,5 +42,5 @@ async def dish_by_id_not_from_cache(
 
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
-        detail=f"dish not found",
+        detail="dish not found",
     )

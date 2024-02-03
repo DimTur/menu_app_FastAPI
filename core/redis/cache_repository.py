@@ -1,7 +1,7 @@
 import pickle
 import uuid
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends
 
 from core.models import Dish, Menu, Submenu
 from core.redis.redis_helper import cache
