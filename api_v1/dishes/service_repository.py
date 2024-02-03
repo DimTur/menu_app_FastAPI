@@ -129,4 +129,5 @@ class DishService:
         dish: Dish,
     ) -> None:
         """Удаляет блюдо по его id"""
-        await self.cache_repo.delete_dish_from_cache(menu_id=menu_id, dish=dish)
+        await self.cache_repo.delete_dish_from_cache(menu_id=menu_id)
+        await crud.delete_dish(session=self.session, dish=dish)

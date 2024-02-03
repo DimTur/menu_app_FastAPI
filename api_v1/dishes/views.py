@@ -75,7 +75,7 @@ async def update_dish_partial(
 @router.delete("/{dish_id}")
 async def delete_dish(
     menu_id: Annotated[uuid.UUID, Path],
-    dish: Dish = Depends(dish_by_id_not_from_cache),
+    dish: Dish = Depends(dish_by_id),
     repo: DishService = Depends(),
 ) -> None:
     await repo.delete_dish(menu_id=menu_id, dish=dish)

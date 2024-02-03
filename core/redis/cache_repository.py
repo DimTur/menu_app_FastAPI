@@ -213,7 +213,7 @@ class CacheRepository:
         """Удаление всех блюд из кэша"""
         await self.cacher.delete(f"/menus/{menu_id}/submenus/{submenu_id}/dishes/")
 
-    async def delete_dish_from_cache(self, menu_id: uuid.UUID, dish: Dish) -> None:
+    async def delete_dish_from_cache(self, menu_id: uuid.UUID) -> None:
         """Работа с кэшем при удалении блюда"""
         await self.clear_cache_by_mask(f"/menu/{menu_id}/")
         await self.delete_all_menus_from_cache()
