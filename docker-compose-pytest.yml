@@ -20,6 +20,26 @@ services:
       timeout: 30s
       retries: 5
 
+  redis:
+    image: redis:7.2.4
+    container_name: redis_app
+    volumes:
+      - redis_data_pytest:/data
+    networks:
+      - backend_network_pytest
+      - db_network_pytest
+    expose:
+      - "6379"
+    ports:
+      - "6379:6379"
+    env_file:
+      - .test.env
+    healthcheck:
+      test: [ "CMD-SHELL", "redis-cli ping | grep PONG" ]
+      interval: 1s
+      timeout: 3s
+      retries: 5
+
   backend:
     build:
       context: .
@@ -44,3 +64,5 @@ networks:
 volumes:
   db_data:
     name: pg_data_menu_pytest
+  redis_data_pytest:
+    name: redis_data_pytest
