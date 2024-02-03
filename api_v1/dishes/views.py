@@ -49,14 +49,14 @@ async def create_dish(
     )
 
 
-@router.get("/{dish_id}", response_model=Dish)
+@router.get("/{dish_id}", response_model=DishUpdatePartial)
 async def get_dish_by_if(
     dish: Dish = Depends(dish_by_id),
 ):
     return dish
 
 
-@router.patch("/{dish_id}")
+@router.patch("/{dish_id}", response_model=Dish)
 async def update_dish_partial(
     menu_id: Annotated[uuid.UUID, Path],
     submenu_id: Annotated[uuid.UUID, Path],
@@ -77,5 +77,5 @@ async def delete_dish(
     menu_id: Annotated[uuid.UUID, Path],
     dish: Dish = Depends(dish_by_id_not_from_cache),
     repo: DishService = Depends(),
-):
+) -> None:
     await repo.delete_dish(menu_id=menu_id, dish=dish)

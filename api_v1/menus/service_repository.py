@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import Depends
+from fastapi import Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.redis.cache_repository import CacheRepository
@@ -38,9 +38,16 @@ class MenuService:
         cached_menu = await self.cache_repo.get_menu_from_cache(menu_id=menu_id)
         if cached_menu:
             return cached_menu
+
         menu = await crud.get_menu_by_id(session=self.session, menu_id=menu_id)
-        await self.cache_repo.set_menu_to_cache(menu=menu)
-        return menu
+        if menu.id:
+            await self.cache_repo.set_menu_to_cache(menu=menu)
+            return menu
+
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"menu not found",
+        )
 
     async def update_menu(
         self,

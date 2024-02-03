@@ -18,7 +18,10 @@ class Base(DeclarativeBase):
         return f"{cls.__name__.lower()}s"
 
     id: Mapped[uuid.UUID] = mapped_column(
-        primary_key=True, default=uuid.uuid4, unique=True, nullable=False
+        primary_key=True,
+        default=uuid.uuid4,
+        unique=True,
+        nullable=False,
     )
     title: Mapped[str] = mapped_column(
         String(32),

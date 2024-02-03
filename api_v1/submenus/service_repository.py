@@ -1,7 +1,6 @@
 import uuid
-from typing import Annotated
 
-from fastapi import Depends, Path
+from fastapi import Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.redis.cache_repository import CacheRepository
@@ -60,13 +59,28 @@ class SubmenuService:
         )
         if cached_submenu:
             return cached_submenu
-        submenu = await crud.get_submenu_by_id(
-            session=self.session,
-            menu_id=menu_id,
-            submenu_id=submenu_id,
-        )
-        await self.cache_repo.set_submenu_to_cache(menu_id=menu_id, submenu=submenu)
-        return submenu
+        try:
+            submenu = await crud.get_submenu_by_id(
+                session=self.session,
+                menu_id=menu_id,
+                submenu_id=submenu_id,
+            )
+
+            if submenu.id is not None:
+                await self.cache_repo.set_submenu_to_cache(
+                    menu_id=menu_id, submenu=submenu
+                )
+                return submenu
+
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="submenu not found",
+            )
+        except AttributeError:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="submenu not found",
+            )
 
     async def update_submenu(
         self,

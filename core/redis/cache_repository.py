@@ -1,7 +1,7 @@
 import pickle
 import uuid
 
-from fastapi import Depends
+from fastapi import Depends, HTTPException, status
 
 from core.models import Menu, Submenu, Dish
 from core.redis.redis_helper import cache
@@ -49,7 +49,6 @@ class CacheRepository:
     async def delete_all_menus_from_cache(self) -> None:
         """Удаление всех меню из кэша"""
         await self.clear_cache_by_mask("/menus/")
-        # await self.cacher.delete("/menus/")
 
     async def delete_menu_from_cache(self, menu_id: uuid.UUID) -> None:
         """Работа с кэшем при удалении меню"""

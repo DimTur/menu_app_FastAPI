@@ -30,12 +30,12 @@ async def create_menu(
 
 @router.get("/{menu_id}", response_model=Menu)
 async def get_menu_by_id(
-    menu: Menu = Depends(menu_by_id),
+    menu: Menu = Depends(menu_by_id_not_from_cache),
 ):
     return menu
 
 
-@router.patch("/{menu_id}")
+@router.patch("/{menu_id}", response_model=MenuUpdatePartial)
 async def update_menu_partial(
     menu_update: MenuUpdatePartial,
     menu: Menu = Depends(menu_by_id_not_from_cache),

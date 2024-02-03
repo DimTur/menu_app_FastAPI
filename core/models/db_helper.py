@@ -16,7 +16,12 @@ from core.models import Base
 
 
 class DatabaseHelper:
-    def __init__(self, url: str, echo: bool = False, poolclass: str = None):
+    def __init__(
+        self,
+        url: str,
+        echo: bool = False,
+        poolclass: str = None,
+    ):
         if poolclass is None:
             poolclass = QueuePool
         else:

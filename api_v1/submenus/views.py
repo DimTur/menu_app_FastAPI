@@ -44,7 +44,7 @@ async def get_submenu_bu_id(
     return submenu
 
 
-@router.patch("/{submenu_id}")
+@router.patch("/{submenu_id}", response_model=SubmenuUpdatePartial)
 async def update_submenu_partial(
     submenu_update: SubmenuUpdatePartial,
     submenu: Submenu = Depends(submenu_by_id_not_from_cache),
@@ -57,5 +57,5 @@ async def update_submenu_partial(
 async def delete_submenu(
     submenu: Submenu = Depends(submenu_by_id_not_from_cache),
     repo: SubmenuService = Depends(),
-):
+) -> None:
     return await repo.delete_submenu(submenu=submenu)

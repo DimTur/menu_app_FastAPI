@@ -1,7 +1,6 @@
 import uuid
-from typing import Annotated
 
-from fastapi import Depends, Path
+from fastapi import Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.redis.cache_repository import CacheRepository
@@ -76,18 +75,32 @@ class DishService:
         )
         if cached_dish:
             return cached_dish
-        dish = await crud.get_dish_by_id(
-            session=self.session,
-            menu_id=menu_id,
-            submenu_id=submenu_id,
-            dish_id=dish_id,
-        )
-        await self.cache_repo.set_dish_to_cache(
-            menu_id=menu_id,
-            submenu_id=submenu_id,
-            dish=dish,
-        )
-        return dish
+
+        try:
+            dish = await crud.get_dish_by_id(
+                session=self.session,
+                menu_id=menu_id,
+                submenu_id=submenu_id,
+                dish_id=dish_id,
+            )
+
+            if dish.id is not None:
+                await self.cache_repo.set_dish_to_cache(
+                    menu_id=menu_id,
+                    submenu_id=submenu_id,
+                    dish=dish,
+                )
+                return dish
+
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"dish not found",
+            )
+        except AttributeError:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="dish not found",
+            )
 
     async def update_dish(
         self,

@@ -17,7 +17,7 @@ settings = GlobalConfig()
 REDIS_URL = f"redis://{GlobalConfig.redis_server}:{GlobalConfig.redis_port}"
 
 
-async def cache():
+async def cache() -> redis:
     async with redis.from_url(REDIS_URL) as client:
         try:
             yield client

@@ -47,7 +47,6 @@ async def get_dish_by_id(
 
 async def create_dish(
     session: AsyncSession,
-    # menu_id: uuid.UUID,
     submenu_id: uuid.UUID,
     dish_in: DishCreate,
 ) -> Dish:
