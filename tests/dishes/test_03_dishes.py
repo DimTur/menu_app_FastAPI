@@ -34,7 +34,7 @@ async def test_get_empty_dishes(
 
 @pytest.mark.asyncio
 async def test_add_dish(
-    post_dish: dict[str, str, Any],
+    post_dish: dict[str, Any],
     test_add_and_get_one_menu,
     test_add_and_get_one_submenu,
     async_client: AsyncClient,

@@ -20,7 +20,7 @@ class DatabaseHelper:
         self,
         url: str,
         echo: bool = False,
-        poolclass: str = None,
+        poolclass: str | None = None,
     ):
         if poolclass is None:
             poolclass = QueuePool

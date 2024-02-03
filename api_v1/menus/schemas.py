@@ -19,8 +19,9 @@ class MenuUpdate(MenuCreate):
 
 
 class MenuUpdatePartial(MenuCreate):
-    title: Annotated[str, MinLen(3), MaxLen(32)] | None = None
-    description: Annotated[str, MinLen(0), MaxLen(300)] | None = None
+    # title: Annotated[str, MinLen(3), MaxLen(32)] | None = None
+    # description: Annotated[str, MinLen(0), MaxLen(300)] | None = None
+    pass
 
 
 class Menu(MenuBase):

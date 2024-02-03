@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 class Dish(Base):
-    __tablename__ = "dishes"
+    __tablename__ = "dishes"  # type: ignore
 
     price: Mapped[DECIMAL] = mapped_column(DECIMAL(precision=10, scale=2))
     submenu_id: Mapped[uuid.UUID] = mapped_column(

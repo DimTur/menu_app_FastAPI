@@ -18,6 +18,11 @@ async def submenu_by_id(
     submenu = await repo.get_submenu_by_id(menu_id=menu_id, submenu_id=submenu_id)
     if submenu is not None:
         return submenu
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="submenu not found",
+        )
 
 
 async def submenu_by_id_not_from_cache(

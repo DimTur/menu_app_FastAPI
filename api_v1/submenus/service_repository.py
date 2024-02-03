@@ -67,7 +67,7 @@ class SubmenuService:
                 submenu_id=submenu_id,
             )
 
-            if submenu.id is not None:
+            if submenu and submenu.id is not None:
                 await self.cache_repo.set_submenu_to_cache(
                     menu_id=menu_id, submenu=submenu
                 )

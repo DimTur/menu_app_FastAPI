@@ -9,7 +9,7 @@ from tests.menus.fixtures import test_add_and_get_one_menu
 
 
 @pytest.fixture
-async def get_empty_submenus(async_client: AsyncClient):
+async def get_empty_submenus(async_client: AsyncClient) -> list[Submenu]:
     session = db_helper.get_scoped_session()
     query = select(Submenu)
     result = await session.execute(query)
@@ -27,7 +27,9 @@ async def post_submenu() -> dict[str, str]:
 
 
 @pytest.fixture
-async def test_add_two_submenus(test_add_and_get_one_menu):
+async def test_add_two_submenus(
+    test_add_and_get_one_menu: tuple[list[Menu], list[Submenu]]
+) -> None:
     menu = test_add_and_get_one_menu[0][0]
     submenus = [
         {
@@ -50,7 +52,9 @@ async def test_add_two_submenus(test_add_and_get_one_menu):
 
 
 @pytest.fixture
-async def test_add_and_get_one_submenu(test_add_and_get_one_menu):
+async def test_add_and_get_one_submenu(
+    test_add_and_get_one_menu: tuple[list[Menu], list[Submenu]]
+) -> list[Submenu]:
     menu = test_add_and_get_one_menu[0][0]
 
     session = db_helper.get_scoped_session()
@@ -72,9 +76,9 @@ async def test_add_and_get_one_submenu(test_add_and_get_one_menu):
 
 @pytest.fixture
 async def test_get_one_submenu_by_id(
-    test_add_and_get_one_menu,
-    test_add_and_get_one_submenu,
-):
+    test_add_and_get_one_menu: tuple[list[Menu], list[Submenu]],
+    test_add_and_get_one_submenu: list[Submenu],
+) -> Submenu:
     session = db_helper.get_scoped_session()
     menu_id = test_add_and_get_one_menu[0][0].id
     submenu_id = test_add_and_get_one_submenu[0][0].id

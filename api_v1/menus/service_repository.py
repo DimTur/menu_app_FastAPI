@@ -41,7 +41,7 @@ class MenuService:
             return cached_menu
 
         menu = await crud.get_menu_by_id(session=self.session, menu_id=menu_id)
-        if menu.id:
+        if menu and menu.id:
             await self.cache_repo.set_menu_to_cache(menu=menu)
             return menu
 

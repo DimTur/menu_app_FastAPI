@@ -85,7 +85,7 @@ class DishService:
                 dish_id=dish_id,
             )
 
-            if dish.id is not None:
+            if dish and dish.id is not None:
                 await self.cache_repo.set_dish_to_cache(
                     menu_id=menu_id,
                     submenu_id=submenu_id,

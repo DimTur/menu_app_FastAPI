@@ -17,6 +17,11 @@ async def menu_by_id(
     menu = await repo.get_menu_by_id(menu_id=menu_id)
     if menu is not None:
         return menu
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="menu not found",
+        )
 
 
 async def menu_by_id_not_from_cache(
