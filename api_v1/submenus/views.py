@@ -4,11 +4,10 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Path, status
 
 from .dependencies import submenu_by_id, submenu_by_id_not_from_cache
+from .schemas import Submenu, SubmenuCreate, SubmenuUpdatePartial
 from .service_repository import SubmenuService
 
 router = APIRouter(tags=["Submenus"])
-
-from .schemas import Submenu, SubmenuCreate, SubmenuUpdatePartial
 
 
 @router.get("/", response_model=list[Submenu])

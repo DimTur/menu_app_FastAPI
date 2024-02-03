@@ -4,11 +4,10 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Path, status
 
 from .dependencies import dish_by_id, dish_by_id_not_from_cache
+from .schemas import Dish, DishCreate, DishUpdatePartial
 from .service_repository import DishService
 
 router = APIRouter(tags=["Dishes"])
-
-from .schemas import Dish, DishCreate, DishUpdatePartial
 
 
 @router.get("/", response_model=list[Dish])
