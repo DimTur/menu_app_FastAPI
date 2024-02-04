@@ -14,7 +14,6 @@ async def menu_by_id(
     menu_id: Annotated[uuid.UUID, Path],
     repo: MenuService = Depends(),
 ) -> Menu:
-    """Получение меню по id из кэша"""
     menu = await repo.get_menu_by_id(menu_id=menu_id)
     if menu is not None:
         return menu
@@ -29,7 +28,6 @@ async def menu_by_id_not_from_cache(
     menu_id: Annotated[uuid.UUID, Path],
     session: AsyncSession = Depends(db_helper.scoped_session_dependency),
 ) -> Menu:
-    """Получение меню по id из БД"""
     menu = await get_menu_by_id(session=session, menu_id=menu_id)
     if menu is not None:
         return menu

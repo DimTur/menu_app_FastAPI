@@ -10,13 +10,7 @@ from .service_repository import DishService
 router = APIRouter(tags=["Dishes"])
 
 
-@router.get(
-    "/",
-    response_model=list[Dish],
-    status_code=200,
-    tags=["Блюда"],
-    summary="Все блюда подменю",
-)
+@router.get("/", response_model=list[Dish])
 async def get_dishes(
     menu_id: Annotated[uuid.UUID, Path],
     submenu_id: Annotated[uuid.UUID, Path],
@@ -30,10 +24,8 @@ async def get_dishes(
 
 @router.post(
     "/",
-    response_model=DishCreate,
-    status_code=201,
-    tags=["Блюда"],
-    summary="Добавляет блюдо",
+    response_model=Dish,
+    status_code=status.HTTP_201_CREATED,
 )
 async def create_dish(
     menu_id: Annotated[uuid.UUID, Path],
@@ -51,26 +43,14 @@ async def create_dish(
     )
 
 
-@router.get(
-    "/{dish_id}",
-    response_model=Dish,
-    status_code=200,
-    tags=["Блюда"],
-    summary="Получить блюдо по id",
-)
+@router.get("/{dish_id}", response_model=DishUpdatePartial)
 async def get_dish_by_if(
     dish: Dish = Depends(dish_by_id),
 ):
     return dish
 
 
-@router.patch(
-    "/{dish_id}",
-    response_model=DishUpdatePartial,
-    status_code=200,
-    tags=["Блюда"],
-    summary="Изменить блюдо по id",
-)
+@router.patch("/{dish_id}", response_model=Dish)
 async def update_dish_partial(
     menu_id: Annotated[uuid.UUID, Path],
     submenu_id: Annotated[uuid.UUID, Path],
@@ -86,12 +66,7 @@ async def update_dish_partial(
     )
 
 
-@router.delete(
-    "/{dish_id}",
-    status_code=200,
-    tags=["Блюда"],
-    summary="Удалить блюдо по id",
-)
+@router.delete("/{dish_id}")
 async def delete_dish(
     menu_id: Annotated[uuid.UUID, Path],
     dish: Dish = Depends(dish_by_id),

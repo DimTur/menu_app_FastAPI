@@ -16,8 +16,6 @@ from core.models import Base
 
 
 class DatabaseHelper:
-    """Помощник в подключении к базе данных"""
-
     def __init__(
         self,
         url: str,

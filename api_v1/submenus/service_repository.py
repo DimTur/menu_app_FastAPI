@@ -11,8 +11,6 @@ from .schemas import Submenu, SubmenuCreate, SubmenuUpdatePartial
 
 
 class SubmenuService:
-    """CRUD репозиторий всех подменю"""
-
     def __init__(
         self,
         cache_repo: CacheRepository = Depends(),

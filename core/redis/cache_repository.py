@@ -2,14 +2,13 @@ import pickle
 import uuid
 
 from fastapi import Depends
+from redis import Redis
 
 from core.models import Dish, Menu, Submenu
 from core.redis.redis_helper import cache
 
 
 class CacheRepository:
-    """Сервисный репозиторий для кэша"""
-
     def __init__(self, cacher=Depends(cache)) -> None:
         self.cacher = cacher
 

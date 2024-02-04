@@ -11,7 +11,6 @@ from .schemas import SubmenuCreate, SubmenuUpdate, SubmenuUpdatePartial
 
 
 async def get_submenus(session: AsyncSession, menu_id: uuid.UUID) -> list[Submenu]:
-    """Получение всех подменю меню"""
     stmt = (
         select(Submenu)
         .join(Submenu.menu)
@@ -29,7 +28,6 @@ async def get_submenu_by_id(
     menu_id: uuid.UUID,
     submenu_id: uuid.UUID,
 ) -> Submenu | None:
-    """Получение подменю по id"""
     stmt = (
         select(Submenu)
         .options(selectinload(Submenu.dishes))
@@ -51,7 +49,6 @@ async def create_submenu(
     menu_id: uuid.UUID,
     submenu_in: SubmenuCreate,
 ) -> Submenu:
-    """Создание подменю"""
     submenu = Submenu(menu_id=menu_id, **submenu_in.model_dump())
     session.add(submenu)
     await session.commit()
@@ -65,7 +62,6 @@ async def update_submenu(
     submenu_update: SubmenuUpdate | SubmenuUpdatePartial,
     partial: bool = True,
 ) -> Submenu:
-    """Обновление подменю по id"""
     for title, value in submenu_update.model_dump(exclude_unset=partial).items():
         setattr(submenu, title, value)
     await session.commit()
@@ -76,6 +72,5 @@ async def delete_submenu(
     session: AsyncSession,
     submenu: Submenu,
 ) -> None:
-    """Удаление подменю по id"""
     await session.delete(submenu)
     await session.commit()

@@ -13,8 +13,6 @@ if TYPE_CHECKING:
 
 
 class Submenu(Base):
-    """Модель подменю"""
-
     __tablename__ = "submenus"  # type: ignore
 
     menu_id: Mapped[uuid.UUID] = mapped_column(

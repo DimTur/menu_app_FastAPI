@@ -14,7 +14,6 @@ async def get_dishes(
     menu_id: uuid.UUID,
     submenu_id: uuid.UUID,
 ) -> list[Dish]:
-    """Получение всех блюд подменю"""
     stmt = (
         select(Dish)
         .join(Dish.submenu)
@@ -32,7 +31,6 @@ async def get_dish_by_id(
     submenu_id: uuid.UUID,
     dish_id: uuid.UUID,
 ) -> Dish | None:
-    """Получение блюда по id"""
     stmt = (
         select(Dish)
         .join(Dish.submenu)
@@ -52,7 +50,6 @@ async def create_dish(
     submenu_id: uuid.UUID,
     dish_in: DishCreate,
 ) -> Dish:
-    """Создание блюда"""
     dish = Dish(submenu_id=submenu_id, **dish_in.model_dump())
     session.add(dish)
     await session.commit()
@@ -66,7 +63,6 @@ async def update_dish(
     dish_update: DishUpdate | DishUpdatePartial,
     partial: bool = True,
 ) -> Dish:
-    """Обновление блюда по id"""
     for title, value in dish_update.model_dump(exclude_unset=partial).items():
         setattr(dish, title, value)
 
@@ -82,6 +78,5 @@ async def delete_dish(
     session: AsyncSession,
     dish: Dish,
 ) -> None:
-    """Удаление блюда по id"""
     await session.delete(dish)
     await session.commit()

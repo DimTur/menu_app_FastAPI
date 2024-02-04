@@ -10,13 +10,7 @@ from .service_repository import SubmenuService
 router = APIRouter(tags=["Submenus"])
 
 
-@router.get(
-    "/",
-    response_model=list[Submenu],
-    status_code=200,
-    tags=["Подменю"],
-    summary="Все подменю меню",
-)
+@router.get("/", response_model=list[Submenu])
 async def get_submenus(
     menu_id: Annotated[uuid.UUID, Path],
     repo: SubmenuService = Depends(),
@@ -26,10 +20,8 @@ async def get_submenus(
 
 @router.post(
     "/",
-    response_model=SubmenuCreate,
-    status_code=201,
-    tags=["Подменю"],
-    summary="Добавляет подменю",
+    response_model=Submenu,
+    status_code=status.HTTP_201_CREATED,
 )
 async def create_submenu(
     menu_id: Annotated[uuid.UUID, Path],
@@ -39,26 +31,14 @@ async def create_submenu(
     return await repo.create_submenu(menu_id=menu_id, submenu_in=submenu_in)
 
 
-@router.get(
-    "/{submenu_id}",
-    response_model=Submenu,
-    status_code=200,
-    tags=["Подменю"],
-    summary="Получить подменю по id",
-)
+@router.get("/{submenu_id}", response_model=Submenu)
 async def get_submenu_bu_id(
     submenu: Submenu = Depends(submenu_by_id),
 ):
     return submenu
 
 
-@router.patch(
-    "/{submenu_id}",
-    response_model=SubmenuUpdatePartial,
-    status_code=200,
-    tags=["Подменю"],
-    summary="Изменить подменю по id",
-)
+@router.patch("/{submenu_id}", response_model=SubmenuUpdatePartial)
 async def update_submenu_partial(
     submenu_update: SubmenuUpdatePartial,
     submenu: Submenu = Depends(submenu_by_id_not_from_cache),
@@ -67,12 +47,7 @@ async def update_submenu_partial(
     return await repo.update_submenu(submenu=submenu, submenu_update=submenu_update)
 
 
-@router.delete(
-    "/{submenu_id}",
-    status_code=200,
-    tags=["Подменю"],
-    summary="Удалить подменю по id",
-)
+@router.delete("/{submenu_id}")
 async def delete_submenu(
     submenu: Submenu = Depends(submenu_by_id_not_from_cache),
     repo: SubmenuService = Depends(),

@@ -15,7 +15,6 @@ async def submenu_by_id(
     submenu_id: Annotated[uuid.UUID, Path],
     repo: SubmenuService = Depends(),
 ) -> Submenu:
-    """Получение подменю из кэша по id"""
     submenu = await repo.get_submenu_by_id(menu_id=menu_id, submenu_id=submenu_id)
     if submenu is not None:
         return submenu
@@ -31,7 +30,6 @@ async def submenu_by_id_not_from_cache(
     submenu_id: Annotated[uuid.UUID, Path],
     session: AsyncSession = Depends(db_helper.scoped_session_dependency),
 ) -> Submenu:
-    """Получение подменю из БД по id"""
     menu = await get_submenu_by_id(
         session=session,
         menu_id=menu_id,

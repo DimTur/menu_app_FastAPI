@@ -5,8 +5,6 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, declared_attr, mapped_column
 
 
 class Base(DeclarativeBase):
-    """Базовая модель для всех моделей"""
-
     __abstract__ = True
 
     # создает имя таблицы на основе имени текущего класса
