@@ -11,6 +11,8 @@ from .schemas import Dish, DishCreate, DishUpdatePartial
 
 
 class DishService:
+    """CRUD репозиторий всех блюд"""
+
     def __init__(
         self,
         cache_repo: CacheRepository = Depends(),

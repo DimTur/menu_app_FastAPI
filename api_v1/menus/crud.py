@@ -11,6 +11,7 @@ from .schemas import MenuCreate, MenuUpdatePartial
 
 
 async def get_menus(session: AsyncSession) -> list[Menu]:
+    """Получение списка всех меню"""
     stmt = (
         select(Menu)
         .options(selectinload(Menu.submenus).selectinload(Submenu.dishes))
@@ -27,6 +28,7 @@ async def get_menus(session: AsyncSession) -> list[Menu]:
 
 
 async def get_menu_by_id(session: AsyncSession, menu_id: uuid.UUID) -> Menu | None:
+    """Получение меню по id"""
     stmt = (
         select(Menu)
         .filter(Menu.id == menu_id)
@@ -43,6 +45,7 @@ async def get_menu_by_id(session: AsyncSession, menu_id: uuid.UUID) -> Menu | No
 
 
 async def create_menu(session: AsyncSession, menu_in: MenuCreate) -> Menu:
+    """Создание меню по id"""
     menu = Menu(**menu_in.model_dump())
     session.add(menu)
     await session.commit()
@@ -56,6 +59,7 @@ async def update_menu(
     menu_update: MenuUpdatePartial,
     partial: bool = False,
 ) -> Menu:
+    """Обновление меню по id"""
     for title, value in menu_update.model_dump(exclude_unset=partial).items():
         setattr(menu, title, value)
     await session.commit()
@@ -66,5 +70,6 @@ async def delete_menu(
     session: AsyncSession,
     menu: Menu,
 ) -> None:
+    """Удаление меню по id"""
     await session.delete(menu)
     await session.commit()

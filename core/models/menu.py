@@ -10,6 +10,8 @@ if TYPE_CHECKING:
 
 
 class Menu(Base):
+    """Модель меню"""
+
     __tablename__ = "menus"  # type: ignore
 
     submenus: Mapped[list["Submenu"]] = relationship(

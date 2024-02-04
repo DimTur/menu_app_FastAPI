@@ -12,6 +12,8 @@ if TYPE_CHECKING:
 
 
 class Dish(Base):
+    """Модель блюда"""
+
     __tablename__ = "dishes"  # type: ignore
 
     price: Mapped[DECIMAL] = mapped_column(DECIMAL(precision=10, scale=2))
