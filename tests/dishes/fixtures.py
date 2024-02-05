@@ -2,9 +2,9 @@ from typing import Any
 
 import pytest
 from httpx import AsyncClient
-from sqlalchemy import select, insert
+from sqlalchemy import insert, select
 
-from core.models import db_helper, Dish
+from core.models import Dish, db_helper
 from tests.submenus.fixtures import test_add_and_get_one_submenu
 
 

@@ -1,75 +1,75 @@
 import uuid
 from typing import Annotated
 
-from fastapi import (
-    APIRouter,
-    Depends,
-    Path,
-    status,
-)
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter, Depends, Path, status
 
-from core.models import db_helper
-from .dependencies import submenu_by_id
+from .dependencies import submenu_by_id, submenu_by_id_not_from_cache
+from .schemas import Submenu, SubmenuCreate, SubmenuUpdatePartial
+from .service_repository import SubmenuService
 
 router = APIRouter(tags=["Submenus"])
 
-from . import crud
-from .schemas import Submenu, SubmenuBase, SubmenuCreate, SubmenuUpdatePartial
 
-
-@router.get("/", response_model=list[Submenu])
+@router.get(
+    "/",
+    response_model=list[Submenu],
+    status_code=200,
+    summary="Возвращает список всех подменю моню",
+)
 async def get_submenus(
     menu_id: Annotated[uuid.UUID, Path],
-    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+    repo: SubmenuService = Depends(),
 ):
-    return await crud.get_submenus(session=session, menu_id=menu_id)
+    return await repo.get_all_submenus(menu_id=menu_id)
 
 
 @router.post(
     "/",
     response_model=Submenu,
-    status_code=status.HTTP_201_CREATED,
+    status_code=201,
+    summary="Создает нове подменю",
 )
 async def create_submenu(
     menu_id: Annotated[uuid.UUID, Path],
     submenu_in: SubmenuCreate,
-    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+    repo: SubmenuService = Depends(),
 ):
-    return await crud.create_submenu(
-        session=session,
-        menu_id=menu_id,
-        submenu_in=submenu_in,
-    )
+    return await repo.create_submenu(menu_id=menu_id, submenu_in=submenu_in)
 
 
-@router.get("/{submenu_id}", response_model=Submenu)
+@router.get(
+    "/{submenu_id}",
+    response_model=Submenu,
+    status_code=200,
+    summary="Возвращает подменю по его id",
+)
 async def get_submenu_bu_id(
     submenu: Submenu = Depends(submenu_by_id),
 ):
     return submenu
 
 
-@router.patch("/{submenu_id}")
+@router.patch(
+    "/{submenu_id}",
+    response_model=SubmenuUpdatePartial,
+    status_code=200,
+    summary="Обновляет подменю по его id",
+)
 async def update_submenu_partial(
     submenu_update: SubmenuUpdatePartial,
-    submenu: Submenu = Depends(submenu_by_id),
-    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+    submenu: Submenu = Depends(submenu_by_id_not_from_cache),
+    repo: SubmenuService = Depends(),
 ):
-    return await crud.update_submenu(
-        session=session,
-        submenu=submenu,
-        submenu_update=submenu_update,
-        partial=True,
-    )
+    return await repo.update_submenu(submenu=submenu, submenu_update=submenu_update)
 
 
-@router.delete("/{submenu_id}")
+@router.delete(
+    "/{submenu_id}",
+    status_code=200,
+    summary="Удаляет подменю по его id",
+)
 async def delete_submenu(
-    submenu: Submenu = Depends(submenu_by_id),
-    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
-):
-    await crud.delete_submenu(
-        session=session,
-        submenu=submenu,
-    )
+    submenu: Submenu = Depends(submenu_by_id_not_from_cache),
+    repo: SubmenuService = Depends(),
+) -> None:
+    return await repo.delete_submenu(submenu=submenu)

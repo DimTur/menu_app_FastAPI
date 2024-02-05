@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING
+
 from sqlalchemy.orm import Mapped, relationship
 
 from .base import Base
@@ -9,7 +10,7 @@ if TYPE_CHECKING:
 
 
 class Menu(Base):
-    __tablename__ = "menus"
+    __tablename__ = "menus"  # type: ignore
 
     submenus: Mapped[list["Submenu"]] = relationship(
         back_populates="menu",

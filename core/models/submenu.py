@@ -1,5 +1,4 @@
 import uuid
-
 from typing import TYPE_CHECKING
 
 from sqlalchemy import ForeignKey
@@ -9,12 +8,12 @@ from core.models import Base
 
 # за счет этой конструкции мы избегаем циклических импортов
 if TYPE_CHECKING:
-    from .menu import Menu
     from .dish import Dish
+    from .menu import Menu
 
 
 class Submenu(Base):
-    __tablename__ = "submenus"
+    __tablename__ = "submenus"  # type: ignore
 
     menu_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("menus.id"),

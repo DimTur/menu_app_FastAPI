@@ -1,67 +1,68 @@
-from fastapi import (
-    APIRouter,
-    Depends,
-    status,
-)
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter, Depends, status
 
-from core.models import db_helper
-from . import crud
-from .dependencies import menu_by_id
-from .schemas import Menu, MenuCreate, MenuUpdate, MenuUpdatePartial
+from .dependencies import menu_by_id, menu_by_id_not_from_cache
+from .schemas import Menu, MenuCreate, MenuUpdatePartial
+from .service_repository import MenuService
 
 router = APIRouter(tags=["Menus"])
 
 
-@router.get("/", response_model=list[Menu])
-async def get_menus(
-    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
-):
-    return await crud.get_menus(session=session)
+@router.get(
+    "/",
+    response_model=list[Menu],
+    status_code=200,
+    summary="Возвращает список всех меню",
+)
+async def get_menus(repo: MenuService = Depends()):
+    return await repo.get_all_menus()
 
 
 @router.post(
     "/",
     response_model=Menu,
-    status_code=status.HTTP_201_CREATED,
+    status_code=201,
+    summary="Создание нового меню",
 )
 async def create_menu(
     menu_in: MenuCreate,
-    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+    repo: MenuService = Depends(),
 ):
-    return await crud.create_menu(session=session, menu_in=menu_in)
+    return await repo.create_menu(menu_in)
 
 
-@router.get("/{menu_id}", response_model=Menu)
+@router.get(
+    "/{menu_id}",
+    response_model=Menu,
+    status_code=200,
+    summary="Возвращает меню по его id",
+)
 async def get_menu_by_id(
-    menu: Menu = Depends(menu_by_id),
+    menu: Menu = Depends(menu_by_id_not_from_cache),
 ):
     return menu
 
 
-@router.patch("/{menu_id}")
+@router.patch(
+    "/{menu_id}",
+    response_model=MenuUpdatePartial,
+    status_code=200,
+    summary="Обновление меню по его id",
+)
 async def update_menu_partial(
     menu_update: MenuUpdatePartial,
-    menu: Menu = Depends(menu_by_id),
-    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+    menu: Menu = Depends(menu_by_id_not_from_cache),
+    repo: MenuService = Depends(),
 ):
-    return await crud.update_menu(
-        session=session,
-        menu=menu,
-        menu_update=menu_update,
-        partial=True,
-    )
+    return await repo.update_menu(menu=menu, menu_update=menu_update)
 
 
 @router.delete(
     "/{menu_id}",
-    # status_code=status.HTTP_204_NO_CONTENT,
+    status_code=200,
+    summary="Удаление меню по его id",
 )
 async def delete_menu(
     menu: Menu = Depends(menu_by_id),
-    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+    repo: MenuService = Depends(),
 ) -> None:
-    await crud.delete_menu(
-        session=session,
-        menu=menu,
-    )
+    return await repo.delete_menu(menu=menu)

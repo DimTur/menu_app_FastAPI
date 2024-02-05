@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
 from api_v1.dishes.schemas import DishCreate, DishUpdate, DishUpdatePartial
-from core.models import Dish, Submenu, Menu
+from core.models import Dish, Menu, Submenu
 
 
 async def get_dishes(
@@ -41,13 +41,12 @@ async def get_dish_by_id(
         .where(Dish.id == dish_id)
     )
     result: Result = await session.execute(stmt)
-    submenu = result.scalar()
-    return submenu
+    dish = result.scalar()
+    return dish
 
 
 async def create_dish(
     session: AsyncSession,
-    # menu_id: uuid.UUID,
     submenu_id: uuid.UUID,
     dish_in: DishCreate,
 ) -> Dish:

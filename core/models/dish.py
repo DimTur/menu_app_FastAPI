@@ -1,8 +1,7 @@
 import uuid
-
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey, DECIMAL
+from sqlalchemy import DECIMAL, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.models import Base
@@ -13,7 +12,7 @@ if TYPE_CHECKING:
 
 
 class Dish(Base):
-    __tablename__ = "dishes"
+    __tablename__ = "dishes"  # type: ignore
 
     price: Mapped[DECIMAL] = mapped_column(DECIMAL(precision=10, scale=2))
     submenu_id: Mapped[uuid.UUID] = mapped_column(

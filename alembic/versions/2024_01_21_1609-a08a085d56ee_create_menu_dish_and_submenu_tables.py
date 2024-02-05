@@ -1,15 +1,15 @@
 """Create menu, dish and submenu tables
 
 Revision ID: a08a085d56ee
-Revises: 
+Revises:
 Create Date: 2024-01-21 16:09:38.244840
 
 """
 from typing import Sequence, Union
 
-from alembic import op
 import sqlalchemy as sa
 
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = "a08a085d56ee"

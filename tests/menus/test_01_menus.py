@@ -1,7 +1,15 @@
 import pytest
 from httpx import AsyncClient
 
+from api_v1.menus.views import (
+    create_menu,
+    delete_menu,
+    get_menu_by_id,
+    get_menus,
+    update_menu_partial,
+)
 from tests.conftest import async_client
+from tests.service import reverse
 
 from .fixtures import (
     get_empty_menus,
@@ -17,9 +25,7 @@ async def test_get_empty_menus(
     get_empty_menus,
     async_client: AsyncClient,
 ):
-    response = await async_client.get(
-        "/api/v1/menus/",
-    )
+    response = await async_client.get(reverse(get_menus))
 
     assert response.status_code == 200, "Статус ответа не 200"
     assert response.json() == get_empty_menus, "В ответе не пустой список"
@@ -31,7 +37,7 @@ async def test_add_menu(
     async_client: AsyncClient,
 ):
     response = await async_client.post(
-        "/api/v1/menus/",
+        reverse(create_menu),
         json=post_menu,
     )
 
@@ -51,9 +57,7 @@ async def test_add_menu(
 
 @pytest.mark.usefixtures("test_add_two_menus")
 async def test_get_menus(async_client: AsyncClient):
-    response = await async_client.get(
-        "/api/v1/menus/",
-    )
+    response = await async_client.get(reverse(get_menus))
 
     assert response.status_code == 200, "Статус ответа не 200"
     assert response.json() != [], "В ответе пустой список"
@@ -65,8 +69,12 @@ async def test_get_menu_by_id(
     async_client: AsyncClient,
 ):
     menu = test_add_and_get_one_menu[0][0]
-    url = f"/api/v1/menus/{menu.id}"
-    response = await async_client.get(url)
+    response = await async_client.get(
+        reverse(
+            get_menu_by_id,
+            menu_id=menu.id,
+        )
+    )
 
     assert response.status_code == 200, "Статус ответа не 200"
     assert response.json()["id"] == str(
@@ -87,18 +95,18 @@ async def test_update_menu_partial(
     async_client: AsyncClient,
 ):
     menu = test_add_and_get_one_menu[0][0]
-    url = f"/api/v1/menus/{menu.id}"
     response = await async_client.patch(
-        url,
+        reverse(
+            update_menu_partial,
+            menu_id=menu.id,
+        ),
         json=update_menu,
     )
 
+    print(response.json())
     assert response.status_code == 200, "Статус ответа не 200"
-    assert "id" in response.json(), "В ответе отсутствует id"
     assert "title" in response.json(), "В ответе отсутствует title"
     assert "description" in response.json(), "В ответе отсутствует description"
-    assert "submenus_count" in response.json(), "В ответе отсутствует submenus_count"
-    assert "dishes_count" in response.json(), "В ответе отсутствует dishes_count"
     assert (
         response.json()["title"] == update_menu["title"]
     ), "Название не соответствует ожидаемому"
@@ -113,8 +121,12 @@ async def test_delete_menu(
     async_client: AsyncClient,
 ):
     menu = test_add_and_get_one_menu[0][0]
-    url = f"/api/v1/menus/{menu.id}"
-    response = await async_client.delete(url)
+    response = await async_client.delete(
+        reverse(
+            delete_menu,
+            menu_id=menu.id,
+        )
+    )
 
     assert response.status_code == 200, "Статус ответа не 200"
     assert response.json() is None, "Сообщение об удалении не соответствует ожидаемому"

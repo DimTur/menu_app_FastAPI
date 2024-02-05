@@ -2,13 +2,13 @@ from asyncio import current_task
 from contextlib import asynccontextmanager
 from typing import AsyncIterator
 
-from sqlalchemy import pool, QueuePool, NullPool
+from sqlalchemy import QueuePool, pool
 from sqlalchemy.ext.asyncio import (
-    AsyncSession,
-    create_async_engine,
-    async_sessionmaker,
-    async_scoped_session,
     AsyncConnection,
+    AsyncSession,
+    async_scoped_session,
+    async_sessionmaker,
+    create_async_engine,
 )
 
 from core.config import settings
@@ -16,7 +16,12 @@ from core.models import Base
 
 
 class DatabaseHelper:
-    def __init__(self, url: str, echo: bool = False, poolclass: str = None):
+    def __init__(
+        self,
+        url: str,
+        echo: bool = False,
+        poolclass: str | None = None,
+    ):
         if poolclass is None:
             poolclass = QueuePool
         else:

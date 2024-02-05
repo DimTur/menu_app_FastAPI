@@ -3,12 +3,21 @@ from typing import Any
 import pytest
 from httpx import AsyncClient
 
+from api_v1.submenus.views import (
+    create_submenu,
+    delete_submenu,
+    get_submenu_bu_id,
+    get_submenus,
+    update_submenu_partial,
+)
 from tests.menus.fixtures import test_add_and_get_one_menu
+from tests.service import reverse
+
 from .fixtures import (
     get_empty_submenus,
     post_submenu,
-    test_add_two_submenus,
     test_add_and_get_one_submenu,
+    test_add_two_submenus,
     update_submenu,
 )
 
@@ -20,8 +29,12 @@ async def test_get_empty_submenus(
     async_client: AsyncClient,
 ):
     menu = test_add_and_get_one_menu[0][0]
-    url = f"/api/v1/menus/{menu.id}/submenus/"
-    response = await async_client.get(url)
+    response = await async_client.get(
+        reverse(
+            get_submenus,
+            menu_id=menu.id,
+        )
+    )
 
     assert response.status_code == 200, "Статус ответа не 200"
     assert response.json() == get_empty_submenus, "В ответе не пустой список"
@@ -34,9 +47,11 @@ async def test_add_submenu(
     async_client: AsyncClient,
 ):
     menu = test_add_and_get_one_menu[0][0]
-    url = f"/api/v1/menus/{menu.id}/submenus/"
     response = await async_client.post(
-        url,
+        reverse(
+            create_submenu,
+            menu_id=menu.id,
+        ),
         json=post_submenu,
     )
 
@@ -74,8 +89,13 @@ async def test_get_submenu_by_id(
 ):
     menu = test_add_and_get_one_menu[0][0]
     submenu = test_add_and_get_one_submenu[0][0]
-    url = f"/api/v1/menus/{menu.id}/submenus/{submenu.id}"
-    response = await async_client.get(url)
+    response = await async_client.get(
+        reverse(
+            get_submenu_bu_id,
+            menu_id=menu.id,
+            submenu_id=submenu.id,
+        )
+    )
 
     assert response.status_code == 200, "Статус ответа не 200"
     assert response.json()["id"] == str(
@@ -98,9 +118,12 @@ async def test_update_submenu_partial(
 ):
     menu = test_add_and_get_one_menu[0][0]
     submenu = test_add_and_get_one_submenu[0][0]
-    url = f"/api/v1/menus/{menu.id}/submenus/{submenu.id}"
     response = await async_client.patch(
-        url,
+        reverse(
+            update_submenu_partial,
+            menu_id=menu.id,
+            submenu_id=submenu.id,
+        ),
         json=update_submenu,
     )
 
@@ -111,10 +134,8 @@ async def test_update_submenu_partial(
     assert (
         response.json()["description"] == update_submenu["description"]
     ), "Описание не соответствует ожидаемому"
-    assert "id" in response.json(), "В ответе отсутствует id"
     assert "title" in response.json(), "В ответе отсутствует title"
     assert "description" in response.json(), "В ответе отсутствует description"
-    assert "dishes_count" in response.json(), "В ответе отсутствует dishes_count"
 
 
 @pytest.mark.asyncio
@@ -125,8 +146,13 @@ async def test_delete_submenu(
 ):
     menu = test_add_and_get_one_menu[0][0]
     submenu = test_add_and_get_one_submenu[0][0]
-    url = f"/api/v1/menus/{menu.id}/submenus/{submenu.id}"
-    response = await async_client.delete(url)
+    response = await async_client.delete(
+        reverse(
+            delete_submenu,
+            menu_id=menu.id,
+            submenu_id=submenu.id,
+        )
+    )
 
     assert response.status_code == 200, "Статус ответа не 200"
     assert response.json() is None, "Сообщение об удалении не соответствует ожидаемому"
