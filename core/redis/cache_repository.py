@@ -2,7 +2,6 @@ import pickle
 import uuid
 
 from fastapi import Depends
-from redis import Redis
 
 from core.models import Dish, Menu, Submenu
 from core.redis.redis_helper import cache

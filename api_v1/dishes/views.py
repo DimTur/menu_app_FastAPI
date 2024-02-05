@@ -43,7 +43,7 @@ async def create_dish(
     )
 
 
-@router.get("/{dish_id}", response_model=DishUpdatePartial)
+@router.get("/{dish_id}", response_model=Dish)
 async def get_dish_by_if(
     dish: Dish = Depends(dish_by_id),
 ):

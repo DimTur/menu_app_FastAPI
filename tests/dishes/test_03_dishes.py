@@ -118,8 +118,6 @@ async def test_get_dish_by_id(
     menu = test_add_and_get_one_menu[0][0]
     submenu = test_add_and_get_one_submenu[0][0]
     dish = test_add_and_get_one_dish[0][0]
-    # url = f"/api/v1/menus/{menu.id}/submenus/{submenu.id}/dishes/{dish.id}"
-    # response = await async_client.get(url)
     response = await async_client.get(
         reverse(
             get_dish_by_if,
@@ -153,11 +151,6 @@ async def test_update_dish_partial(
     menu = test_add_and_get_one_menu[0][0]
     submenu = test_add_and_get_one_submenu[0][0]
     dish = test_add_and_get_one_dish[0][0]
-    # url = f"/api/v1/menus/{menu.id}/submenus/{submenu.id}/dishes/{dish.id}"
-    # response = await async_client.patch(
-    #     url,
-    #     json=update_dish,
-    # )
     response = await async_client.patch(
         reverse(
             update_dish_partial,

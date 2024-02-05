@@ -21,9 +21,6 @@ class DishUpdate(DishBase):
 
 
 class DishUpdatePartial(DishCreate):
-    # title: Annotated[str, MinLen(3), MaxLen(32)] | None = None
-    # description: Annotated[str, MinLen(0), MaxLen(300)] | None = None
-    # price: Decimal | None | None = None
     pass
 
 
