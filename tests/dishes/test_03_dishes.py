@@ -7,7 +7,7 @@ from httpx import AsyncClient
 from api_v1.dishes.views import (
     create_dish,
     delete_dish,
-    get_dish_by_if,
+    get_dish_by_id,
     get_dishes,
     update_dish_partial,
 )
@@ -120,7 +120,7 @@ async def test_get_dish_by_id(
     dish = test_add_and_get_one_dish[0][0]
     response = await async_client.get(
         reverse(
-            get_dish_by_if,
+            get_dish_by_id,
             menu_id=menu.id,
             submenu_id=submenu.id,
             dish_id=dish.id,

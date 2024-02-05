@@ -7,7 +7,12 @@ from .service_repository import MenuService
 router = APIRouter(tags=["Menus"])
 
 
-@router.get("/", response_model=list[Menu])
+@router.get(
+    "/",
+    response_model=list[Menu],
+    status_code=200,
+    summary="Возвращает список всех меню",
+)
 async def get_menus(repo: MenuService = Depends()):
     return await repo.get_all_menus()
 
@@ -15,7 +20,8 @@ async def get_menus(repo: MenuService = Depends()):
 @router.post(
     "/",
     response_model=Menu,
-    status_code=status.HTTP_201_CREATED,
+    status_code=201,
+    summary="Создание нового меню",
 )
 async def create_menu(
     menu_in: MenuCreate,
@@ -24,14 +30,24 @@ async def create_menu(
     return await repo.create_menu(menu_in)
 
 
-@router.get("/{menu_id}", response_model=Menu)
+@router.get(
+    "/{menu_id}",
+    response_model=Menu,
+    status_code=200,
+    summary="Возвращает меню по его id",
+)
 async def get_menu_by_id(
     menu: Menu = Depends(menu_by_id_not_from_cache),
 ):
     return menu
 
 
-@router.patch("/{menu_id}", response_model=MenuUpdatePartial)
+@router.patch(
+    "/{menu_id}",
+    response_model=MenuUpdatePartial,
+    status_code=200,
+    summary="Обновление меню по его id",
+)
 async def update_menu_partial(
     menu_update: MenuUpdatePartial,
     menu: Menu = Depends(menu_by_id_not_from_cache),
@@ -40,7 +56,11 @@ async def update_menu_partial(
     return await repo.update_menu(menu=menu, menu_update=menu_update)
 
 
-@router.delete("/{menu_id}")
+@router.delete(
+    "/{menu_id}",
+    status_code=200,
+    summary="Удаление меню по его id",
+)
 async def delete_menu(
     menu: Menu = Depends(menu_by_id),
     repo: MenuService = Depends(),
