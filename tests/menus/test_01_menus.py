@@ -104,7 +104,6 @@ async def test_update_menu_partial(
         json=update_menu,
     )
 
-    print(response.json())
     assert response.status_code == 200, "Статус ответа не 200"
     assert "title" in response.json(), "В ответе отсутствует title"
     assert "description" in response.json(), "В ответе отсутствует description"
