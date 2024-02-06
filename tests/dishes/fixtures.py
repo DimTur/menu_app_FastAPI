@@ -28,7 +28,9 @@ async def post_dish() -> dict[str, Any]:
 
 
 @pytest.fixture
-async def test_add_two_dishes(test_add_and_get_one_submenu: Submenu) -> list[dict[str, Any]]:
+async def test_add_two_dishes(
+    test_add_and_get_one_submenu: Submenu,
+) -> list[dict[str, Any]]:
     submenu = test_add_and_get_one_submenu[0][0]
     dishes = [
         {
