@@ -13,7 +13,7 @@ router = APIRouter(tags=["Submenus"])
 @router.get(
     "/",
     response_model=list[Submenu],
-    status_code=200,
+    status_code=status.HTTP_200_OK,
     summary="Возвращает список всех подменю моню",
 )
 async def get_submenus(
@@ -26,7 +26,7 @@ async def get_submenus(
 @router.post(
     "/",
     response_model=Submenu,
-    status_code=201,
+    status_code=status.HTTP_201_CREATED,
     summary="Создает нове подменю",
 )
 async def create_submenu(
@@ -40,7 +40,7 @@ async def create_submenu(
 @router.get(
     "/{submenu_id}",
     response_model=Submenu,
-    status_code=200,
+    status_code=status.HTTP_200_OK,
     summary="Возвращает подменю по его id",
 )
 async def get_submenu_bu_id(
@@ -52,7 +52,7 @@ async def get_submenu_bu_id(
 @router.patch(
     "/{submenu_id}",
     response_model=SubmenuUpdatePartial,
-    status_code=200,
+    status_code=status.HTTP_200_OK,
     summary="Обновляет подменю по его id",
 )
 async def update_submenu_partial(
@@ -65,7 +65,7 @@ async def update_submenu_partial(
 
 @router.delete(
     "/{submenu_id}",
-    status_code=200,
+    status_code=status.HTTP_200_OK,
     summary="Удаляет подменю по его id",
 )
 async def delete_submenu(

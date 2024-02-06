@@ -10,7 +10,7 @@ router = APIRouter(tags=["Menus"])
 @router.get(
     "/",
     response_model=list[Menu],
-    status_code=200,
+    status_code=status.HTTP_200_OK,
     summary="Возвращает список всех меню",
 )
 async def get_menus(repo: MenuService = Depends()):
@@ -20,7 +20,7 @@ async def get_menus(repo: MenuService = Depends()):
 @router.post(
     "/",
     response_model=Menu,
-    status_code=201,
+    status_code=status.HTTP_201_CREATED,
     summary="Создание нового меню",
 )
 async def create_menu(
@@ -33,7 +33,7 @@ async def create_menu(
 @router.get(
     "/{menu_id}",
     response_model=Menu,
-    status_code=200,
+    status_code=status.HTTP_200_OK,
     summary="Возвращает меню по его id",
 )
 async def get_menu_by_id(
@@ -45,7 +45,7 @@ async def get_menu_by_id(
 @router.patch(
     "/{menu_id}",
     response_model=MenuUpdatePartial,
-    status_code=200,
+    status_code=status.HTTP_200_OK,
     summary="Обновление меню по его id",
 )
 async def update_menu_partial(
@@ -58,7 +58,7 @@ async def update_menu_partial(
 
 @router.delete(
     "/{menu_id}",
-    status_code=200,
+    status_code=status.HTTP_200_OK,
     summary="Удаление меню по его id",
 )
 async def delete_menu(

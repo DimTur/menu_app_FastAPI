@@ -13,7 +13,7 @@ router = APIRouter(tags=["Dishes"])
 @router.get(
     "/",
     response_model=list[Dish],
-    status_code=200,
+    status_code=status.HTTP_200_OK,
     summary="Возвращает список всех блюд подменю",
 )
 async def get_dishes(
@@ -30,7 +30,7 @@ async def get_dishes(
 @router.post(
     "/",
     response_model=Dish,
-    status_code=201,
+    status_code=status.HTTP_201_CREATED,
     summary="Создает новое блюдо",
 )
 async def create_dish(
@@ -52,7 +52,7 @@ async def create_dish(
 @router.get(
     "/{dish_id}",
     response_model=Dish,
-    status_code=200,
+    status_code=status.HTTP_200_OK,
     summary="Возвращает блюдо по его id",
 )
 async def get_dish_by_id(
@@ -64,7 +64,7 @@ async def get_dish_by_id(
 @router.patch(
     "/{dish_id}",
     response_model=Dish,
-    status_code=200,
+    status_code=status.HTTP_200_OK,
     summary="Обновляет блюдо по его id",
 )
 async def update_dish_partial(
@@ -84,7 +84,7 @@ async def update_dish_partial(
 
 @router.delete(
     "/{dish_id}",
-    status_code=200,
+    status_code=status.HTTP_200_OK,
     summary="Удаляет блюдо по его id",
 )
 async def delete_dish(
