@@ -28,7 +28,7 @@ async def get_dishes(
     menu_id: Annotated[uuid.UUID, Path],
     submenu_id: Annotated[uuid.UUID, Path],
     repo: DishService = Depends(),
-):
+) -> list[Dish]:
     return await repo.get_all_dishes(
         menu_id=menu_id,
         submenu_id=submenu_id,
@@ -47,7 +47,7 @@ async def create_dish(
     submenu_id: Annotated[uuid.UUID, Path],
     dish_in: DishCreate,
     repo: DishService = Depends(),
-):
+) -> Dish:
     dish_in_data = dish_in.model_dump()
     dish_in_data["price"] = str(dish_in_data["price"])
 
@@ -67,7 +67,7 @@ async def create_dish(
 )
 async def get_dish_by_id(
     dish: Dish = Depends(dish_by_id),
-):
+) -> Dish:
     return dish
 
 
@@ -84,7 +84,7 @@ async def update_dish_partial(
     dish_update: DishUpdatePartial,
     dish: Dish = Depends(dish_by_id_not_from_cache),
     repo: DishService = Depends(),
-):
+) -> Dish:
     return await repo.update_dish(
         menu_id=menu_id,
         submenu_id=submenu_id,

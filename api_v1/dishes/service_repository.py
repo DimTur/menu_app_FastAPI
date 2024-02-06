@@ -24,7 +24,7 @@ class DishService:
         self,
         menu_id: uuid.UUID,
         submenu_id: uuid.UUID,
-    ) -> list[Dish] | None:
+    ) -> list[Dish]:
         """Возвращает список всех блюд для подменю"""
         try:
             cached_dishes = await self.cache_repo.get_list_dishes_cache(

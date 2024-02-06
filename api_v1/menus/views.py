@@ -21,7 +21,7 @@ router = APIRouter(tags=["Menus"])
     summary="Возвращает список всех меню",
     responses=get_all_menus_responses,
 )
-async def get_menus(repo: MenuService = Depends()):
+async def get_menus(repo: MenuService = Depends()) -> list[Menu]:
     return await repo.get_all_menus()
 
 
@@ -35,7 +35,7 @@ async def get_menus(repo: MenuService = Depends()):
 async def create_menu(
     menu_in: MenuCreate,
     repo: MenuService = Depends(),
-):
+) -> Menu:
     return await repo.create_menu(menu_in)
 
 
@@ -48,7 +48,7 @@ async def create_menu(
 )
 async def get_menu_by_id(
     menu: Menu = Depends(menu_by_id_not_from_cache),
-):
+) -> Menu:
     return menu
 
 
@@ -63,7 +63,7 @@ async def update_menu_partial(
     menu_update: MenuUpdatePartial,
     menu: Menu = Depends(menu_by_id_not_from_cache),
     repo: MenuService = Depends(),
-):
+) -> Menu:
     return await repo.update_menu(menu=menu, menu_update=menu_update)
 
 

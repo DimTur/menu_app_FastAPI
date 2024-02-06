@@ -27,7 +27,7 @@ router = APIRouter(tags=["Submenus"])
 async def get_submenus(
     menu_id: Annotated[uuid.UUID, Path],
     repo: SubmenuService = Depends(),
-):
+) -> list[Submenu]:
     return await repo.get_all_submenus(menu_id=menu_id)
 
 
@@ -42,7 +42,7 @@ async def create_submenu(
     menu_id: Annotated[uuid.UUID, Path],
     submenu_in: SubmenuCreate,
     repo: SubmenuService = Depends(),
-):
+) -> Submenu:
     return await repo.create_submenu(menu_id=menu_id, submenu_in=submenu_in)
 
 
@@ -55,7 +55,7 @@ async def create_submenu(
 )
 async def get_submenu_bu_id(
     submenu: Submenu = Depends(submenu_by_id),
-):
+) -> Submenu:
     return submenu
 
 
@@ -70,7 +70,7 @@ async def update_submenu_partial(
     submenu_update: SubmenuUpdatePartial,
     submenu: Submenu = Depends(submenu_by_id_not_from_cache),
     repo: SubmenuService = Depends(),
-):
+) -> Submenu:
     return await repo.update_submenu(submenu=submenu, submenu_update=submenu_update)
 
 
