@@ -1,7 +1,9 @@
 import pytest
 from httpx import AsyncClient
 
+from api_v1.menus.schemas import Menu
 from api_v1.menus.views import get_menu_by_id
+from api_v1.submenus.schemas import Submenu
 from api_v1.submenus.views import get_submenu_bu_id
 from tests.dishes.fixtures import test_add_two_dishes
 from tests.menus.fixtures import test_add_and_get_one_menu, test_get_one_menu_by_id
@@ -14,11 +16,11 @@ from tests.submenus.fixtures import (
 
 @pytest.mark.usefixtures("test_add_two_dishes")
 async def test_get_menu_by_id(
-    test_add_and_get_one_menu,
-    test_add_and_get_one_submenu,
-    test_get_one_menu_by_id,
+    test_add_and_get_one_menu: Menu,
+    test_add_and_get_one_submenu: Submenu,
+    test_get_one_menu_by_id: Menu,
     async_client: AsyncClient,
-):
+) -> None:
     menu = test_get_one_menu_by_id
     response = await async_client.get(reverse(get_menu_by_id, menu_id=menu.id))
 
@@ -42,12 +44,12 @@ async def test_get_menu_by_id(
 
 @pytest.mark.usefixtures("test_add_two_dishes")
 async def test_get_submenu_by_id(
-    test_add_and_get_one_menu,
-    test_add_and_get_one_submenu,
-    test_get_one_menu_by_id,
-    test_get_one_submenu_by_id,
+    test_add_and_get_one_menu: Menu,
+    test_add_and_get_one_submenu: Submenu,
+    test_get_one_menu_by_id: Menu,
+    test_get_one_submenu_by_id: Submenu,
     async_client: AsyncClient,
-):
+) -> None:
     menu = test_get_one_menu_by_id
     submenu = test_get_one_submenu_by_id
     response = await async_client.get(
