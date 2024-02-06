@@ -4,6 +4,7 @@ from typing import Any
 import pytest
 from httpx import AsyncClient
 
+from api_v1.dishes.schemas import Dish
 from api_v1.dishes.views import (
     create_dish,
     delete_dish,
@@ -11,6 +12,8 @@ from api_v1.dishes.views import (
     get_dishes,
     update_dish_partial,
 )
+from api_v1.menus.schemas import Menu
+from api_v1.submenus.schemas import Submenu
 from tests.menus.fixtures import test_add_and_get_one_menu
 from tests.service import reverse
 from tests.submenus.fixtures import test_add_and_get_one_submenu
@@ -26,15 +29,13 @@ from .fixtures import (
 
 @pytest.mark.asyncio
 async def test_get_empty_dishes(
-    test_add_and_get_one_menu,
-    test_add_and_get_one_submenu,
-    get_empty_dishes,
+    test_add_and_get_one_menu: Menu,
+    test_add_and_get_one_submenu: Submenu,
+    get_empty_dishes: list[Dish],
     async_client: AsyncClient,
-):
+) -> None:
     menu = test_add_and_get_one_menu[0][0]
     submenu = test_add_and_get_one_submenu[0][0]
-    # url = f"/api/v1/menus/{menu.id}/submenus/{submenu.id}/dishes/"
-    # response = await async_client.get(url)
     response = await async_client.get(
         reverse(
             get_dishes,
@@ -50,17 +51,12 @@ async def test_get_empty_dishes(
 @pytest.mark.asyncio
 async def test_add_dish(
     post_dish: dict[str, Any],
-    test_add_and_get_one_menu,
-    test_add_and_get_one_submenu,
+    test_add_and_get_one_menu: Menu,
+    test_add_and_get_one_submenu: Submenu,
     async_client: AsyncClient,
-):
+) -> None:
     menu = test_add_and_get_one_menu[0][0]
     submenu = test_add_and_get_one_submenu[0][0]
-    # url = f"/api/v1/menus/{menu.id}/submenus/{submenu.id}/dishes/"
-    # response = await async_client.post(
-    #     url,
-    #     json=post_dish,
-    # )
     response = await async_client.post(
         reverse(
             create_dish,
@@ -88,14 +84,12 @@ async def test_add_dish(
 
 @pytest.mark.usefixtures("test_add_two_dishes")
 async def test_get_list_dishes(
-    test_add_and_get_one_menu,
-    test_add_and_get_one_submenu,
+    test_add_and_get_one_menu: Menu,
+    test_add_and_get_one_submenu: Submenu,
     async_client: AsyncClient,
-):
+) -> None:
     menu = test_add_and_get_one_menu[0][0]
     submenu = test_add_and_get_one_submenu[0][0]
-    # url = f"/api/v1/menus/{menu.id}/submenus/{submenu.id}/dishes/"
-    # response = await async_client.get(url)
     response = await async_client.get(
         reverse(
             get_dishes,
@@ -110,11 +104,11 @@ async def test_get_list_dishes(
 
 @pytest.mark.asyncio
 async def test_get_dish_by_id(
-    test_add_and_get_one_menu,
-    test_add_and_get_one_submenu,
-    test_add_and_get_one_dish,
+    test_add_and_get_one_menu: Menu,
+    test_add_and_get_one_submenu: Submenu,
+    test_add_and_get_one_dish: Dish,
     async_client: AsyncClient,
-):
+) -> None:
     menu = test_add_and_get_one_menu[0][0]
     submenu = test_add_and_get_one_submenu[0][0]
     dish = test_add_and_get_one_dish[0][0]
@@ -126,8 +120,6 @@ async def test_get_dish_by_id(
             dish_id=dish.id,
         )
     )
-    print(dish)
-    print(response.json())
     assert response.status_code == 200, "Статус ответа не 200"
     assert (
         response.json()["title"] == dish.title
@@ -143,11 +135,11 @@ async def test_get_dish_by_id(
 @pytest.mark.asyncio
 async def test_update_dish_partial(
     update_dish: dict[str, str],
-    test_add_and_get_one_menu,
-    test_add_and_get_one_submenu,
-    test_add_and_get_one_dish,
+    test_add_and_get_one_menu: Menu,
+    test_add_and_get_one_submenu: Submenu,
+    test_add_and_get_one_dish: Dish,
     async_client: AsyncClient,
-):
+) -> None:
     menu = test_add_and_get_one_menu[0][0]
     submenu = test_add_and_get_one_submenu[0][0]
     dish = test_add_and_get_one_dish[0][0]
@@ -179,16 +171,14 @@ async def test_update_dish_partial(
 
 @pytest.mark.asyncio
 async def test_delete_dish(
-    test_add_and_get_one_menu,
-    test_add_and_get_one_submenu,
-    test_add_and_get_one_dish,
+    test_add_and_get_one_menu: Menu,
+    test_add_and_get_one_submenu: Submenu,
+    test_add_and_get_one_dish: Dish,
     async_client: AsyncClient,
-):
+) -> None:
     menu = test_add_and_get_one_menu[0][0]
     submenu = test_add_and_get_one_submenu[0][0]
     dish = test_add_and_get_one_dish[0][0]
-    # url = f"/api/v1/menus/{menu.id}/submenus/{submenu.id}/dishes/{dish.id}"
-    # response = await async_client.delete(url)
     response = await async_client.delete(
         reverse(
             delete_dish,
