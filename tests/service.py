@@ -8,7 +8,6 @@ def get_routes() -> dict[str, str]:
     routes = {}
     for route in app.routes:
         routes[route.endpoint.__name__] = route.path
-    # print(routes)
     return routes
 
 

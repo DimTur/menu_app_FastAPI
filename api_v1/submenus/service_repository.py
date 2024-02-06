@@ -1,6 +1,7 @@
 import uuid
 
 from fastapi import Depends, HTTPException, status
+from sqlalchemy.exc import DatabaseError, IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import db_helper
@@ -24,15 +25,20 @@ class SubmenuService:
         menu_id: uuid.UUID,
     ) -> list[Submenu]:
         """Возвращает список всех подменю для блюда"""
-        cached_submenus = await self.cache_repo.get_list_submenus_cache(menu_id)
-        if cached_submenus:
-            return cached_submenus
-        submenus = await crud.get_submenus(session=self.session, menu_id=menu_id)
-        await self.cache_repo.set_list_submenus_cache(
-            menu_id=menu_id,
-            submenus=submenus,
-        )
-        return submenus
+        try:
+            cached_submenus = await self.cache_repo.get_list_submenus_cache(menu_id)
+            if cached_submenus:
+                return cached_submenus
+            submenus = await crud.get_submenus(session=self.session, menu_id=menu_id)
+            await self.cache_repo.set_list_submenus_cache(
+                menu_id=menu_id,
+                submenus=submenus,
+            )
+            return submenus
+        except DatabaseError:
+            raise HTTPException(
+                status_code=500, detail="Internal server error occurred"
+            )
 
     async def create_submenu(
         self,
@@ -40,13 +46,19 @@ class SubmenuService:
         submenu_in: SubmenuCreate,
     ) -> Submenu:
         """Создание нового подменю"""
-        submenu = await crud.create_submenu(
-            session=self.session,
-            menu_id=menu_id,
-            submenu_in=submenu_in,
-        )
-        await self.cache_repo.create_submenu_cache(menu_id=menu_id, submenu=submenu)
-        return submenu
+        try:
+            submenu = await crud.create_submenu(
+                session=self.session,
+                menu_id=menu_id,
+                submenu_in=submenu_in,
+            )
+            await self.cache_repo.create_submenu_cache(menu_id=menu_id, submenu=submenu)
+            return submenu
+        except IntegrityError:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Submenu with the same title already exists",
+            )
 
     async def get_submenu_by_id(
         self,
@@ -89,17 +101,23 @@ class SubmenuService:
         submenu_update: SubmenuUpdatePartial,
     ) -> Submenu:
         """Обновляет подменю по его id"""
-        submenu = await crud.update_submenu(
-            session=self.session,
-            submenu=submenu,
-            submenu_update=submenu_update,
-            partial=True,
-        )
-        await self.cache_repo.update_submenu_cache(
-            menu_id=submenu.menu_id,
-            submenu=submenu,
-        )
-        return submenu
+        try:
+            submenu = await crud.update_submenu(
+                session=self.session,
+                submenu=submenu,
+                submenu_update=submenu_update,
+                partial=True,
+            )
+            await self.cache_repo.update_submenu_cache(
+                menu_id=submenu.menu_id,
+                submenu=submenu,
+            )
+            return submenu
+        except IntegrityError:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Submenu with the same title already exists",
+            )
 
     async def delete_submenu(self, submenu: Submenu) -> None:
         """Удаляет подменю по его id"""
