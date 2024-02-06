@@ -3,6 +3,8 @@ from typing import Any
 import pytest
 from httpx import AsyncClient
 
+from api_v1.menus.schemas import Menu
+from api_v1.submenus.schemas import Submenu
 from api_v1.submenus.views import (
     create_submenu,
     delete_submenu,
@@ -24,10 +26,10 @@ from .fixtures import (
 
 @pytest.mark.asyncio
 async def test_get_empty_submenus(
-    test_add_and_get_one_menu,
-    get_empty_submenus,
+    test_add_and_get_one_menu: Menu,
+    get_empty_submenus: list[Submenu],
     async_client: AsyncClient,
-):
+) -> None:
     menu = test_add_and_get_one_menu[0][0]
     response = await async_client.get(
         reverse(
@@ -43,9 +45,9 @@ async def test_get_empty_submenus(
 @pytest.mark.asyncio
 async def test_add_submenu(
     post_submenu: dict[str, Any],
-    test_add_and_get_one_menu,
+    test_add_and_get_one_menu: Menu,
     async_client: AsyncClient,
-):
+) -> None:
     menu = test_add_and_get_one_menu[0][0]
     response = await async_client.post(
         reverse(
@@ -70,9 +72,9 @@ async def test_add_submenu(
 
 @pytest.mark.usefixtures("test_add_two_submenus")
 async def test_get_list_submenus(
-    test_add_and_get_one_menu,
+    test_add_and_get_one_menu: Menu,
     async_client: AsyncClient,
-):
+) -> None:
     menu = test_add_and_get_one_menu[0][0]
     url = f"/api/v1/menus/{menu.id}/submenus/"
     response = await async_client.get(url)
@@ -83,10 +85,10 @@ async def test_get_list_submenus(
 
 @pytest.mark.asyncio
 async def test_get_submenu_by_id(
-    test_add_and_get_one_menu,
-    test_add_and_get_one_submenu,
+    test_add_and_get_one_menu: Menu,
+    test_add_and_get_one_submenu: Submenu,
     async_client: AsyncClient,
-):
+) -> None:
     menu = test_add_and_get_one_menu[0][0]
     submenu = test_add_and_get_one_submenu[0][0]
     response = await async_client.get(
@@ -112,10 +114,10 @@ async def test_get_submenu_by_id(
 @pytest.mark.asyncio
 async def test_update_submenu_partial(
     update_submenu: dict[str, str],
-    test_add_and_get_one_menu,
-    test_add_and_get_one_submenu,
+    test_add_and_get_one_menu: Menu,
+    test_add_and_get_one_submenu: Submenu,
     async_client: AsyncClient,
-):
+) -> None:
     menu = test_add_and_get_one_menu[0][0]
     submenu = test_add_and_get_one_submenu[0][0]
     response = await async_client.patch(
@@ -140,10 +142,10 @@ async def test_update_submenu_partial(
 
 @pytest.mark.asyncio
 async def test_delete_submenu(
-    test_add_and_get_one_menu,
-    test_add_and_get_one_submenu,
+    test_add_and_get_one_menu: Menu,
+    test_add_and_get_one_submenu: Submenu,
     async_client: AsyncClient,
-):
+) -> None:
     menu = test_add_and_get_one_menu[0][0]
     submenu = test_add_and_get_one_submenu[0][0]
     response = await async_client.delete(

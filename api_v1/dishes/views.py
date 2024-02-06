@@ -4,6 +4,13 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Path, status
 
 from .dependencies import dish_by_id, dish_by_id_not_from_cache
+from .responses import (
+    delete_dish_by_id_responses,
+    get_all_dishes_responses,
+    get_dish_by_id_responses,
+    patch_dish_by_id_responses,
+    post_dishes_responses,
+)
 from .schemas import Dish, DishCreate, DishUpdatePartial
 from .service_repository import DishService
 
@@ -13,14 +20,15 @@ router = APIRouter(tags=["Dishes"])
 @router.get(
     "/",
     response_model=list[Dish],
-    status_code=200,
+    status_code=status.HTTP_200_OK,
     summary="Возвращает список всех блюд подменю",
+    responses=get_all_dishes_responses,
 )
 async def get_dishes(
     menu_id: Annotated[uuid.UUID, Path],
     submenu_id: Annotated[uuid.UUID, Path],
     repo: DishService = Depends(),
-):
+) -> list[Dish]:
     return await repo.get_all_dishes(
         menu_id=menu_id,
         submenu_id=submenu_id,
@@ -30,15 +38,16 @@ async def get_dishes(
 @router.post(
     "/",
     response_model=Dish,
-    status_code=201,
+    status_code=status.HTTP_201_CREATED,
     summary="Создает новое блюдо",
+    responses=post_dishes_responses,
 )
 async def create_dish(
     menu_id: Annotated[uuid.UUID, Path],
     submenu_id: Annotated[uuid.UUID, Path],
     dish_in: DishCreate,
     repo: DishService = Depends(),
-):
+) -> Dish:
     dish_in_data = dish_in.model_dump()
     dish_in_data["price"] = str(dish_in_data["price"])
 
@@ -52,20 +61,22 @@ async def create_dish(
 @router.get(
     "/{dish_id}",
     response_model=Dish,
-    status_code=200,
+    status_code=status.HTTP_200_OK,
     summary="Возвращает блюдо по его id",
+    responses=get_dish_by_id_responses,
 )
 async def get_dish_by_id(
     dish: Dish = Depends(dish_by_id),
-):
+) -> Dish:
     return dish
 
 
 @router.patch(
     "/{dish_id}",
     response_model=Dish,
-    status_code=200,
+    status_code=status.HTTP_200_OK,
     summary="Обновляет блюдо по его id",
+    responses=patch_dish_by_id_responses,
 )
 async def update_dish_partial(
     menu_id: Annotated[uuid.UUID, Path],
@@ -73,7 +84,7 @@ async def update_dish_partial(
     dish_update: DishUpdatePartial,
     dish: Dish = Depends(dish_by_id_not_from_cache),
     repo: DishService = Depends(),
-):
+) -> Dish:
     return await repo.update_dish(
         menu_id=menu_id,
         submenu_id=submenu_id,
@@ -84,8 +95,9 @@ async def update_dish_partial(
 
 @router.delete(
     "/{dish_id}",
-    status_code=200,
+    status_code=status.HTTP_200_OK,
     summary="Удаляет блюдо по его id",
+    responses=delete_dish_by_id_responses,
 )
 async def delete_dish(
     menu_id: Annotated[uuid.UUID, Path],

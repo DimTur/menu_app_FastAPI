@@ -1,6 +1,7 @@
 import uuid
 
 from fastapi import Depends, HTTPException, status
+from sqlalchemy.exc import DatabaseError, IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import db_helper
@@ -23,25 +24,30 @@ class DishService:
         self,
         menu_id: uuid.UUID,
         submenu_id: uuid.UUID,
-    ) -> list[Dish] | None:
+    ) -> list[Dish]:
         """Возвращает список всех блюд для подменю"""
-        cached_dishes = await self.cache_repo.get_list_dishes_cache(
-            menu_id=menu_id,
-            submenu_id=submenu_id,
-        )
-        if cached_dishes:
-            return cached_dishes
-        dishes = await crud.get_dishes(
-            session=self.session,
-            menu_id=menu_id,
-            submenu_id=submenu_id,
-        )
-        await self.cache_repo.set_list_dishes_cache(
-            menu_id=menu_id,
-            submenu_id=submenu_id,
-            dishes=dishes,
-        )
-        return dishes
+        try:
+            cached_dishes = await self.cache_repo.get_list_dishes_cache(
+                menu_id=menu_id,
+                submenu_id=submenu_id,
+            )
+            if cached_dishes:
+                return cached_dishes
+            dishes = await crud.get_dishes(
+                session=self.session,
+                menu_id=menu_id,
+                submenu_id=submenu_id,
+            )
+            await self.cache_repo.set_list_dishes_cache(
+                menu_id=menu_id,
+                submenu_id=submenu_id,
+                dishes=dishes,
+            )
+            return dishes
+        except DatabaseError:
+            raise HTTPException(
+                status_code=500, detail="Internal server error occurred"
+            )
 
     async def create_dish(
         self,
@@ -50,17 +56,23 @@ class DishService:
         dish_in: DishCreate,
     ) -> Dish:
         """Создание нового блюда"""
-        dish = await crud.create_dish(
-            session=self.session,
-            submenu_id=submenu_id,
-            dish_in=dish_in,
-        )
-        await self.cache_repo.create_dish_cache(
-            menu_id=menu_id,
-            submenu_id=submenu_id,
-            dish=dish,
-        )
-        return dish
+        try:
+            dish = await crud.create_dish(
+                session=self.session,
+                submenu_id=submenu_id,
+                dish_in=dish_in,
+            )
+            await self.cache_repo.create_dish_cache(
+                menu_id=menu_id,
+                submenu_id=submenu_id,
+                dish=dish,
+            )
+            return dish
+        except IntegrityError:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Dish with the same title already exists",
+            )
 
     async def get_dish_by_id(
         self,
@@ -111,18 +123,24 @@ class DishService:
         dish_update: DishUpdatePartial,
     ) -> Dish:
         """Обдновляет блюдо по его id"""
-        dish = await crud.update_dish(
-            session=self.session,
-            dish=dish,
-            dish_update=dish_update,
-            partial=True,
-        )
-        await self.cache_repo.update_dish_cache(
-            menu_id=menu_id,
-            submenu_id=submenu_id,
-            dish=dish,
-        )
-        return dish
+        try:
+            dish = await crud.update_dish(
+                session=self.session,
+                dish=dish,
+                dish_update=dish_update,
+                partial=True,
+            )
+            await self.cache_repo.update_dish_cache(
+                menu_id=menu_id,
+                submenu_id=submenu_id,
+                dish=dish,
+            )
+            return dish
+        except IntegrityError:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Dish with the same title already exists",
+            )
 
     async def delete_dish(
         self,

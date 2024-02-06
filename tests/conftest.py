@@ -9,7 +9,7 @@ from main import app
 
 
 @pytest.fixture(scope="function", autouse=True)
-async def prepare_database():
+async def prepare_database() -> None:
     async with db_helper.connect() as conn:
         await db_helper.drop_all(conn)
         await db_helper.create_all(conn)

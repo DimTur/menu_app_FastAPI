@@ -27,9 +27,7 @@ async def post_submenu() -> dict[str, str]:
 
 
 @pytest.fixture
-async def test_add_two_submenus(
-    test_add_and_get_one_menu: tuple[list[Menu], list[Submenu]]
-) -> None:
+async def test_add_two_submenus(test_add_and_get_one_menu: Menu) -> None:
     menu = test_add_and_get_one_menu[0][0]
     submenus = [
         {
@@ -52,9 +50,7 @@ async def test_add_two_submenus(
 
 
 @pytest.fixture
-async def test_add_and_get_one_submenu(
-    test_add_and_get_one_menu: tuple[list[Menu], list[Submenu]]
-) -> list[Submenu]:
+async def test_add_and_get_one_submenu(test_add_and_get_one_menu: Menu) -> Submenu:
     menu = test_add_and_get_one_menu[0][0]
 
     session = db_helper.get_scoped_session()
@@ -76,8 +72,8 @@ async def test_add_and_get_one_submenu(
 
 @pytest.fixture
 async def test_get_one_submenu_by_id(
-    test_add_and_get_one_menu: tuple[list[Menu], list[Submenu]],
-    test_add_and_get_one_submenu: list[Submenu],
+    test_add_and_get_one_menu: Menu,
+    test_add_and_get_one_submenu: Submenu,
 ) -> Submenu:
     session = db_helper.get_scoped_session()
     menu_id = test_add_and_get_one_menu[0][0].id

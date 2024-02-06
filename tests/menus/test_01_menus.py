@@ -1,6 +1,7 @@
 import pytest
 from httpx import AsyncClient
 
+from api_v1.menus.schemas import Menu
 from api_v1.menus.views import (
     create_menu,
     delete_menu,
@@ -22,9 +23,9 @@ from .fixtures import (
 
 @pytest.mark.asyncio
 async def test_get_empty_menus(
-    get_empty_menus,
+    get_empty_menus: list[Menu],
     async_client: AsyncClient,
-):
+) -> None:
     response = await async_client.get(reverse(get_menus))
 
     assert response.status_code == 200, "Статус ответа не 200"
@@ -35,7 +36,7 @@ async def test_get_empty_menus(
 async def test_add_menu(
     post_menu: dict[str, str],
     async_client: AsyncClient,
-):
+) -> None:
     response = await async_client.post(
         reverse(create_menu),
         json=post_menu,
@@ -56,7 +57,7 @@ async def test_add_menu(
 
 
 @pytest.mark.usefixtures("test_add_two_menus")
-async def test_get_menus(async_client: AsyncClient):
+async def test_get_menus(async_client: AsyncClient) -> None:
     response = await async_client.get(reverse(get_menus))
 
     assert response.status_code == 200, "Статус ответа не 200"
@@ -65,9 +66,9 @@ async def test_get_menus(async_client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_get_menu_by_id(
-    test_add_and_get_one_menu,
+    test_add_and_get_one_menu: Menu,
     async_client: AsyncClient,
-):
+) -> None:
     menu = test_add_and_get_one_menu[0][0]
     response = await async_client.get(
         reverse(
@@ -91,9 +92,9 @@ async def test_get_menu_by_id(
 @pytest.mark.asyncio
 async def test_update_menu_partial(
     update_menu: dict[str, str],
-    test_add_and_get_one_menu,
+    test_add_and_get_one_menu: Menu,
     async_client: AsyncClient,
-):
+) -> None:
     menu = test_add_and_get_one_menu[0][0]
     response = await async_client.patch(
         reverse(
@@ -103,7 +104,6 @@ async def test_update_menu_partial(
         json=update_menu,
     )
 
-    print(response.json())
     assert response.status_code == 200, "Статус ответа не 200"
     assert "title" in response.json(), "В ответе отсутствует title"
     assert "description" in response.json(), "В ответе отсутствует description"
@@ -117,9 +117,9 @@ async def test_update_menu_partial(
 
 @pytest.mark.asyncio
 async def test_delete_menu(
-    test_add_and_get_one_menu,
+    test_add_and_get_one_menu: Menu,
     async_client: AsyncClient,
-):
+) -> None:
     menu = test_add_and_get_one_menu[0][0]
     response = await async_client.delete(
         reverse(
