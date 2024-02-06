@@ -26,7 +26,7 @@ async def post_menu() -> dict[str, str]:
 
 
 @pytest.fixture
-async def test_add_two_menus():
+async def test_add_two_menus() -> None:
     menus = [
         {"title": "MENU1", "description": "MENU1MENU1MENU1MENU1MENU1"},
         {"title": "MENU2", "description": "MENU2MENU2MENU2MENU2MENU2"},
@@ -55,7 +55,7 @@ async def test_add_and_get_one_menu() -> Menu:
 
 @pytest.fixture
 async def test_get_one_menu_by_id(
-    test_add_and_get_one_menu,
+    test_add_and_get_one_menu: Menu,
 ) -> Menu:
     session = db_helper.get_scoped_session()
     menu_id = test_add_and_get_one_menu[0][0].id
