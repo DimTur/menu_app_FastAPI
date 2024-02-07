@@ -1,7 +1,7 @@
 import uuid
 from typing import Annotated
 
-from fastapi import Depends, HTTPException, Path, status
+from fastapi import BackgroundTasks, Depends, HTTPException, Path, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import Menu, db_helper
@@ -11,10 +11,14 @@ from .service_repository import MenuService
 
 
 async def menu_by_id(
+    background_tasks: BackgroundTasks,
     menu_id: Annotated[uuid.UUID, Path],
     repo: MenuService = Depends(),
 ) -> Menu:
-    menu = await repo.get_menu_by_id(menu_id=menu_id)
+    menu = await repo.get_menu_by_id(
+        background_tasks=background_tasks,
+        menu_id=menu_id,
+    )
     if menu is not None:
         return menu
     else:

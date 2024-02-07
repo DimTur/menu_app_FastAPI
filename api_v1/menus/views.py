@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, BackgroundTasks, Depends, status
 
 from .dependencies import menu_by_id, menu_by_id_not_from_cache
 from .responses import (
@@ -21,8 +21,11 @@ router = APIRouter(tags=["Menus"])
     summary="Возвращает список всех меню с подменю и блюдами",
     responses=get_all_menus_responses,
 )
-async def get_all_base(repo: MenuService = Depends()) -> list[Menu]:
-    return await repo.get_all_base()
+async def get_all_base(
+    background_tasks: BackgroundTasks,
+    repo: MenuService = Depends(),
+) -> list[Menu]:
+    return await repo.get_all_base(background_tasks=background_tasks)
 
 
 @router.get(
@@ -32,8 +35,11 @@ async def get_all_base(repo: MenuService = Depends()) -> list[Menu]:
     summary="Возвращает список всех меню",
     responses=get_all_menus_responses,
 )
-async def get_menus(repo: MenuService = Depends()) -> list[Menu]:
-    return await repo.get_all_menus()
+async def get_menus(
+    background_tasks: BackgroundTasks,
+    repo: MenuService = Depends(),
+) -> list[Menu]:
+    return await repo.get_all_menus(background_tasks=background_tasks)
 
 
 @router.post(
@@ -44,10 +50,14 @@ async def get_menus(repo: MenuService = Depends()) -> list[Menu]:
     responses=post_menu_responses,
 )
 async def create_menu(
+    background_tasks: BackgroundTasks,
     menu_in: MenuCreate,
     repo: MenuService = Depends(),
 ) -> Menu:
-    return await repo.create_menu(menu_in)
+    return await repo.create_menu(
+        background_tasks=background_tasks,
+        menu_in=menu_in,
+    )
 
 
 @router.get(
@@ -71,11 +81,16 @@ async def get_menu_by_id(
     responses=patch_menu_by_id_responses,
 )
 async def update_menu_partial(
+    background_tasks: BackgroundTasks,
     menu_update: MenuUpdatePartial,
     menu: Menu = Depends(menu_by_id_not_from_cache),
     repo: MenuService = Depends(),
 ) -> Menu:
-    return await repo.update_menu(menu=menu, menu_update=menu_update)
+    return await repo.update_menu(
+        background_tasks=background_tasks,
+        menu=menu,
+        menu_update=menu_update,
+    )
 
 
 @router.delete(
@@ -85,7 +100,11 @@ async def update_menu_partial(
     responses=delete_menu_by_id_responses,
 )
 async def delete_menu(
+    background_tasks: BackgroundTasks,
     menu: Menu = Depends(menu_by_id),
     repo: MenuService = Depends(),
 ) -> None:
-    return await repo.delete_menu(menu=menu)
+    return await repo.delete_menu(
+        background_tasks=background_tasks,
+        menu=menu,
+    )
