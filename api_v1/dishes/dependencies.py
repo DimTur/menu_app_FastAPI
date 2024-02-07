@@ -1,7 +1,7 @@
 import uuid
 from typing import Annotated
 
-from fastapi import Depends, HTTPException, Path, status
+from fastapi import BackgroundTasks, Depends, HTTPException, Path, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import Dish, db_helper
@@ -11,12 +11,14 @@ from .service_repository import DishService
 
 
 async def dish_by_id(
+    background_tasks: BackgroundTasks,
     menu_id: Annotated[uuid.UUID, Path],
     submenu_id: Annotated[uuid.UUID, Path],
     dish_id: Annotated[uuid.UUID, Path],
     repo: DishService = Depends(),
 ) -> Dish:
     dish = await repo.get_dish_by_id(
+        background_tasks=background_tasks,
         menu_id=menu_id,
         submenu_id=submenu_id,
         dish_id=dish_id,

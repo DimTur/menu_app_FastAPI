@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import Depends, HTTPException, status
+from fastapi import BackgroundTasks, Depends, HTTPException, status
 from sqlalchemy.exc import DatabaseError, IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -22,6 +22,7 @@ class DishService:
 
     async def get_all_dishes(
         self,
+        background_tasks: BackgroundTasks,
         menu_id: uuid.UUID,
         submenu_id: uuid.UUID,
     ) -> list[Dish]:
@@ -38,11 +39,17 @@ class DishService:
                 menu_id=menu_id,
                 submenu_id=submenu_id,
             )
-            await self.cache_repo.set_list_dishes_cache(
+            background_tasks.add_task(
+                self.cache_repo.set_list_dishes_cache,
                 menu_id=menu_id,
                 submenu_id=submenu_id,
                 dishes=dishes,
             )
+            # await self.cache_repo.set_list_dishes_cache(
+            #     menu_id=menu_id,
+            #     submenu_id=submenu_id,
+            #     dishes=dishes,
+            # )
             return dishes
         except DatabaseError:
             raise HTTPException(
@@ -51,6 +58,7 @@ class DishService:
 
     async def create_dish(
         self,
+        background_tasks: BackgroundTasks,
         menu_id: uuid.UUID,
         submenu_id: uuid.UUID,
         dish_in: DishCreate,
@@ -62,11 +70,17 @@ class DishService:
                 submenu_id=submenu_id,
                 dish_in=dish_in,
             )
-            await self.cache_repo.create_dish_cache(
+            background_tasks.add_task(
+                self.cache_repo.create_dish_cache,
                 menu_id=menu_id,
                 submenu_id=submenu_id,
                 dish=dish,
             )
+            # await self.cache_repo.create_dish_cache(
+            #     menu_id=menu_id,
+            #     submenu_id=submenu_id,
+            #     dish=dish,
+            # )
             return dish
         except IntegrityError:
             raise HTTPException(
@@ -76,6 +90,7 @@ class DishService:
 
     async def get_dish_by_id(
         self,
+        background_tasks: BackgroundTasks,
         menu_id: uuid.UUID,
         submenu_id: uuid.UUID,
         dish_id: uuid.UUID,
@@ -98,11 +113,17 @@ class DishService:
             )
 
             if dish and dish.id is not None:
-                await self.cache_repo.set_dish_to_cache(
+                background_tasks.add_task(
+                    self.cache_repo.set_dish_to_cache,
                     menu_id=menu_id,
                     submenu_id=submenu_id,
                     dish=dish,
                 )
+                # await self.cache_repo.set_dish_to_cache(
+                #     menu_id=menu_id,
+                #     submenu_id=submenu_id,
+                #     dish=dish,
+                # )
                 return dish
 
             raise HTTPException(
@@ -117,6 +138,7 @@ class DishService:
 
     async def update_dish(
         self,
+        background_tasks: BackgroundTasks,
         menu_id: uuid.UUID,
         submenu_id: uuid.UUID,
         dish: Dish,
@@ -130,11 +152,17 @@ class DishService:
                 dish_update=dish_update,
                 partial=True,
             )
-            await self.cache_repo.update_dish_cache(
+            background_tasks.add_task(
+                self.cache_repo.update_dish_cache,
                 menu_id=menu_id,
                 submenu_id=submenu_id,
                 dish=dish,
             )
+            # await self.cache_repo.update_dish_cache(
+            #     menu_id=menu_id,
+            #     submenu_id=submenu_id,
+            #     dish=dish,
+            # )
             return dish
         except IntegrityError:
             raise HTTPException(
@@ -144,9 +172,14 @@ class DishService:
 
     async def delete_dish(
         self,
+        background_tasks: BackgroundTasks,
         menu_id: uuid.UUID,
         dish: Dish,
     ) -> None:
         """Удаляет блюдо по его id"""
-        await self.cache_repo.delete_dish_from_cache(menu_id=menu_id)
+        background_tasks.add_task(
+            self.cache_repo.delete_dish_from_cache,
+            menu_id=menu_id,
+        )
+        # await self.cache_repo.delete_dish_from_cache(menu_id=menu_id)
         await crud.delete_dish(session=self.session, dish=dish)

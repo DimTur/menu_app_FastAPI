@@ -1,7 +1,7 @@
 import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Path, status
+from fastapi import APIRouter, BackgroundTasks, Depends, Path, status
 
 from .dependencies import dish_by_id, dish_by_id_not_from_cache
 from .responses import (
@@ -25,11 +25,13 @@ router = APIRouter(tags=["Dishes"])
     responses=get_all_dishes_responses,
 )
 async def get_dishes(
+    background_tasks: BackgroundTasks,
     menu_id: Annotated[uuid.UUID, Path],
     submenu_id: Annotated[uuid.UUID, Path],
     repo: DishService = Depends(),
 ) -> list[Dish]:
     return await repo.get_all_dishes(
+        background_tasks=background_tasks,
         menu_id=menu_id,
         submenu_id=submenu_id,
     )
@@ -43,6 +45,7 @@ async def get_dishes(
     responses=post_dishes_responses,
 )
 async def create_dish(
+    background_tasks: BackgroundTasks,
     menu_id: Annotated[uuid.UUID, Path],
     submenu_id: Annotated[uuid.UUID, Path],
     dish_in: DishCreate,
@@ -52,6 +55,7 @@ async def create_dish(
     dish_in_data["price"] = str(dish_in_data["price"])
 
     return await repo.create_dish(
+        background_tasks=background_tasks,
         menu_id=menu_id,
         submenu_id=submenu_id,
         dish_in=dish_in,
@@ -79,6 +83,7 @@ async def get_dish_by_id(
     responses=patch_dish_by_id_responses,
 )
 async def update_dish_partial(
+    background_tasks: BackgroundTasks,
     menu_id: Annotated[uuid.UUID, Path],
     submenu_id: Annotated[uuid.UUID, Path],
     dish_update: DishUpdatePartial,
@@ -86,6 +91,7 @@ async def update_dish_partial(
     repo: DishService = Depends(),
 ) -> Dish:
     return await repo.update_dish(
+        background_tasks=background_tasks,
         menu_id=menu_id,
         submenu_id=submenu_id,
         dish=dish,
@@ -100,8 +106,13 @@ async def update_dish_partial(
     responses=delete_dish_by_id_responses,
 )
 async def delete_dish(
+    background_tasks: BackgroundTasks,
     menu_id: Annotated[uuid.UUID, Path],
     dish: Dish = Depends(dish_by_id),
     repo: DishService = Depends(),
 ) -> None:
-    await repo.delete_dish(menu_id=menu_id, dish=dish)
+    await repo.delete_dish(
+        background_tasks=background_tasks,
+        menu_id=menu_id,
+        dish=dish,
+    )
