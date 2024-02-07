@@ -30,11 +30,13 @@ class CacheRepository:
         """Работа с кэшем при создании меню"""
         await self.delete_all_menus_from_cache()
         await self.cacher.set(f"/menus/{menu.id}/", pickle.dumps(menu))
+        await self.delete_all_base_cache()
 
     async def update_menu_cache(self, menu: Menu) -> None:
         """Работа с кэшем при обновлении меню"""
         await self.delete_all_menus_from_cache()
         await self.cacher.set(f"/menus/{menu.id}/", pickle.dumps(menu))
+        await self.delete_all_base_cache()
 
     async def set_menu_to_cache(self, menu: Menu) -> None:
         """Запись меню в кеш"""
@@ -54,6 +56,7 @@ class CacheRepository:
         """Работа с кэшем при удалении меню"""
         await self.clear_cache_by_mask(f"/menus/{menu_id}/")
         await self.delete_all_menus_from_cache()
+        await self.delete_all_base_cache()
 
     async def set_list_submenus_cache(
         self,
@@ -86,6 +89,7 @@ class CacheRepository:
         await self.clear_cache_by_mask(f"/menus/{menu_id}/")
         await self.delete_all_menus_from_cache()
         await self.set_submenu_to_cache(menu_id=menu_id, submenu=submenu)
+        await self.delete_all_base_cache()
 
     async def set_submenu_to_cache(
         self,
@@ -120,15 +124,18 @@ class CacheRepository:
         await self.delete_all_submenus_from_cache(submenu.menu_id)
         await self.delete_all_menus_from_cache()
         await self.set_submenu_to_cache(submenu=submenu, menu_id=menu_id)
+        await self.delete_all_base_cache()
 
     async def delete_all_submenus_from_cache(self, menu_id: uuid.UUID) -> None:
         """Удаление всех подменю из кэша"""
         await self.cacher.delete(f"/menus/{menu_id}/submenus/")
+        await self.delete_all_base_cache()
 
     async def delete_submenu_from_cache(self, submenu: Submenu) -> None:
         """Работа с кэшем при удалении подменю"""
         await self.clear_cache_by_mask(f"/menus/{submenu.menu_id}/")
         await self.delete_all_menus_from_cache()
+        await self.delete_all_base_cache()
 
     async def set_list_dishes_cache(
         self,
@@ -166,6 +173,7 @@ class CacheRepository:
         await self.delete_all_menus_from_cache()
         await self.clear_cache_by_mask(f"/menus/{menu_id}/")
         await self.set_dish_to_cache(menu_id=menu_id, submenu_id=submenu_id, dish=dish)
+        await self.delete_all_base_cache()
 
     async def set_dish_to_cache(
         self,
@@ -204,6 +212,7 @@ class CacheRepository:
         await self.delete_all_menus_from_cache()
         await self.clear_cache_by_mask(f"/menus/{menu_id}/")
         await self.set_dish_to_cache(menu_id=menu_id, submenu_id=submenu_id, dish=dish)
+        await self.delete_all_base_cache()
 
     async def delete_all_dishes_from_cache(
         self,
@@ -212,8 +221,24 @@ class CacheRepository:
     ) -> None:
         """Удаление всех блюд из кэша"""
         await self.cacher.delete(f"/menus/{menu_id}/submenus/{submenu_id}/dishes/")
+        await self.delete_all_base_cache()
 
     async def delete_dish_from_cache(self, menu_id: uuid.UUID) -> None:
         """Работа с кэшем при удалении блюда"""
         await self.clear_cache_by_mask(f"/menu/{menu_id}/")
         await self.delete_all_menus_from_cache()
+        await self.delete_all_base_cache()
+
+    async def set_all_base_cache(self, menus: list[Menu]) -> None:
+        """Запись всех меню в кэш с подменю и блюдами"""
+        await self.cacher.set("/menus/all/", pickle.dumps(menus))
+
+    async def get_all_base_cache(self) -> list[Menu] | None:
+        """Получение всейх меню из кэша с подменю и блюдами"""
+        if (cached_menus_all := await self.cacher.get("/menus/all/")) is not None:
+            return pickle.loads(cached_menus_all)
+        return None
+
+    async def delete_all_base_cache(self) -> None:
+        """Удаление всех меню из кэша с подменю и блюдами"""
+        await self.clear_cache_by_mask("/menus/all/")

@@ -8,7 +8,7 @@ from core.models import Menu, db_helper
 from core.redis.cache_repository import CacheRepository
 
 from . import crud
-from .schemas import MenuCreate, MenuUpdatePartial
+from .schemas import FullBase, MenuCreate, MenuUpdatePartial
 
 
 class MenuService:
@@ -20,9 +20,19 @@ class MenuService:
         self.session = session
         self.cache_repo = cache_repo
 
-    async def get_all_base(self):
-        menus = await crud.get_all_base(session=self.session)
-        return menus
+    async def get_all_base(self) -> list[FullBase]:
+        """Получение списка всех меню с подменю и блюдами"""
+        try:
+            cached_all_base = await self.cache_repo.get_all_base_cache()
+            if cached_all_base:
+                return cached_all_base
+            all_base = await crud.get_all_base(session=self.session)
+            await self.cache_repo.set_all_base_cache(all_base)
+            return all_base
+        except DatabaseError:
+            raise HTTPException(
+                status_code=500, detail="Internal server error occurred"
+            )
 
     async def get_all_menus(self) -> list[Menu]:
         """Получения списка меню"""

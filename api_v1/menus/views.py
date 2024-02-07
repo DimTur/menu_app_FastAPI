@@ -8,7 +8,7 @@ from .responses import (
     patch_menu_by_id_responses,
     post_menu_responses,
 )
-from .schemas import Menu, MenuCreate, MenuUpdatePartial
+from .schemas import FullBase, Menu, MenuCreate, MenuUpdatePartial
 from .service_repository import MenuService
 
 router = APIRouter(tags=["Menus"])
@@ -16,9 +16,9 @@ router = APIRouter(tags=["Menus"])
 
 @router.get(
     "/all/",
-    response_model=list[Menu],
+    response_model=list[FullBase],
     status_code=status.HTTP_200_OK,
-    summary="Возвращает список всех меню",
+    summary="Возвращает список всех меню с подменю и блюдами",
     responses=get_all_menus_responses,
 )
 async def get_all_base(repo: MenuService = Depends()) -> list[Menu]:

@@ -4,6 +4,8 @@ from typing import Annotated
 from annotated_types import MaxLen, MinLen
 from pydantic import BaseModel, ConfigDict
 
+from api_v1.dishes.schemas import Dish
+
 
 class SubmenuBase(BaseModel):
     title: Annotated[str, MinLen(3), MaxLen(32)]
@@ -27,3 +29,7 @@ class Submenu(SubmenuBase):
 
     id: uuid.UUID
     dishes_count: int = 0
+
+
+class FullBaseSubmenu(Submenu):
+    dishes: list[Dish]
