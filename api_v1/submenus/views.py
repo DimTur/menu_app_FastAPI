@@ -1,7 +1,7 @@
 import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Path, status
+from fastapi import APIRouter, BackgroundTasks, Depends, Path, status
 
 from .dependencies import submenu_by_id, submenu_by_id_not_from_cache
 from .responses import (
@@ -25,10 +25,14 @@ router = APIRouter(tags=["Submenus"])
     responses=get_all_submenus_responses,
 )
 async def get_submenus(
+    background_tasks: BackgroundTasks,
     menu_id: Annotated[uuid.UUID, Path],
     repo: SubmenuService = Depends(),
 ) -> list[Submenu]:
-    return await repo.get_all_submenus(menu_id=menu_id)
+    return await repo.get_all_submenus(
+        background_tasks=background_tasks,
+        menu_id=menu_id,
+    )
 
 
 @router.post(
@@ -39,11 +43,16 @@ async def get_submenus(
     responses=post_submenu_responses,
 )
 async def create_submenu(
+    background_tasks: BackgroundTasks,
     menu_id: Annotated[uuid.UUID, Path],
     submenu_in: SubmenuCreate,
     repo: SubmenuService = Depends(),
 ) -> Submenu:
-    return await repo.create_submenu(menu_id=menu_id, submenu_in=submenu_in)
+    return await repo.create_submenu(
+        background_tasks=background_tasks,
+        menu_id=menu_id,
+        submenu_in=submenu_in,
+    )
 
 
 @router.get(
@@ -67,11 +76,16 @@ async def get_submenu_bu_id(
     responses=patch_submenu_by_id_responses,
 )
 async def update_submenu_partial(
+    background_tasks: BackgroundTasks,
     submenu_update: SubmenuUpdatePartial,
     submenu: Submenu = Depends(submenu_by_id_not_from_cache),
     repo: SubmenuService = Depends(),
 ) -> Submenu:
-    return await repo.update_submenu(submenu=submenu, submenu_update=submenu_update)
+    return await repo.update_submenu(
+        background_tasks=background_tasks,
+        submenu=submenu,
+        submenu_update=submenu_update,
+    )
 
 
 @router.delete(
@@ -81,7 +95,11 @@ async def update_submenu_partial(
     responses=delete_submenu_by_id_responses,
 )
 async def delete_submenu(
+    background_tasks: BackgroundTasks,
     submenu: Submenu = Depends(submenu_by_id_not_from_cache),
     repo: SubmenuService = Depends(),
 ) -> None:
-    return await repo.delete_submenu(submenu=submenu)
+    return await repo.delete_submenu(
+        background_tasks=background_tasks,
+        submenu=submenu,
+    )

@@ -1,7 +1,7 @@
 import uuid
 from typing import Annotated
 
-from fastapi import Depends, HTTPException, Path, status
+from fastapi import BackgroundTasks, Depends, HTTPException, Path, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import Submenu, db_helper
@@ -11,11 +11,16 @@ from .service_repository import SubmenuService
 
 
 async def submenu_by_id(
+    background_tasks: BackgroundTasks,
     menu_id: Annotated[uuid.UUID, Path],
     submenu_id: Annotated[uuid.UUID, Path],
     repo: SubmenuService = Depends(),
 ) -> Submenu:
-    submenu = await repo.get_submenu_by_id(menu_id=menu_id, submenu_id=submenu_id)
+    submenu = await repo.get_submenu_by_id(
+        background_tasks=background_tasks,
+        menu_id=menu_id,
+        submenu_id=submenu_id,
+    )
     if submenu is not None:
         return submenu
     else:
