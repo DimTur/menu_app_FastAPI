@@ -10,6 +10,17 @@ from core.models import Menu, Submenu
 from .schemas import MenuCreate, MenuUpdatePartial
 
 
+async def get_all_base(session: AsyncSession):
+    stmt = (
+        select(Menu)
+        .options(selectinload(Menu.submenus).selectinload(Submenu.dishes))
+        .order_by(Menu.title)
+    )
+    result: Result = await session.execute(stmt)
+    menus = result.scalars().fetchall()
+    return list(menus)
+
+
 async def get_menus(session: AsyncSession) -> list[Menu]:
     stmt = (
         select(Menu)

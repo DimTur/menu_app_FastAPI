@@ -15,6 +15,17 @@ router = APIRouter(tags=["Menus"])
 
 
 @router.get(
+    "/all/",
+    response_model=list[Menu],
+    status_code=status.HTTP_200_OK,
+    summary="Возвращает список всех меню",
+    responses=get_all_menus_responses,
+)
+async def get_all_base(repo: MenuService = Depends()) -> list[Menu]:
+    return await repo.get_all_base()
+
+
+@router.get(
     "/",
     response_model=list[Menu],
     status_code=status.HTTP_200_OK,

@@ -20,6 +20,10 @@ class MenuService:
         self.session = session
         self.cache_repo = cache_repo
 
+    async def get_all_base(self):
+        menus = await crud.get_all_base(session=self.session)
+        return menus
+
     async def get_all_menus(self) -> list[Menu]:
         """Получения списка меню"""
         try:
