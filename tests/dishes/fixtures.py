@@ -3,8 +3,10 @@ from typing import Any
 import pytest
 from httpx import AsyncClient
 from sqlalchemy import insert, select
+from sqlalchemy.engine import Result
+from sqlalchemy.orm import joinedload
 
-from core.models import Dish, Submenu, db_helper
+from core.models import Dish, Menu, Submenu, db_helper
 from tests.submenus.fixtures import test_add_and_get_one_submenu
 
 
@@ -82,6 +84,31 @@ async def test_add_and_get_one_dish(
     dishes = result.all()
     await session.close()
     return dishes
+
+
+@pytest.fixture
+async def test_get_one_dish_by_id(
+    test_add_and_get_one_menu: Menu,
+    test_add_and_get_one_submenu: Submenu,
+    test_add_and_get_one_dish: Dish,
+) -> Dish:
+    session = db_helper.get_scoped_session()
+    menu_id = test_add_and_get_one_menu[0][0].id
+    submenu_id = test_add_and_get_one_submenu[0][0].id
+    dish_id = test_add_and_get_one_dish[0][0].id
+    stmt = (
+        select(Dish)
+        .join(Dish.submenu)
+        .join(Submenu.menu)
+        .options(joinedload(Dish.submenu).joinedload(Submenu.menu))
+        .where(Menu.id == menu_id)
+        .where(Submenu.id == submenu_id)
+        .where(Dish.id == dish_id)
+    )
+    result: Result = await session.execute(stmt)
+    dish = result.scalar()
+    await session.close()
+    return dish
 
 
 @pytest.fixture

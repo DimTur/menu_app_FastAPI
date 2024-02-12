@@ -1,22 +1,33 @@
+from decimal import Decimal
+
 import pytest
 from httpx import AsyncClient
 
+from api_v1.dishes.schemas import Dish
 from api_v1.menus.schemas import Menu
 from api_v1.menus.views import (
     create_menu,
     delete_menu,
+    get_all_base,
     get_menu_by_id,
     get_menus,
     update_menu_partial,
 )
+from api_v1.submenus.schemas import Submenu
 from tests.conftest import async_client
+from tests.dishes.fixtures import test_add_and_get_one_dish, test_get_one_dish_by_id
 from tests.service import reverse
+from tests.submenus.fixtures import (
+    test_add_and_get_one_submenu,
+    test_get_one_submenu_by_id,
+)
 
 from .fixtures import (
     get_empty_menus,
     post_menu,
     test_add_and_get_one_menu,
     test_add_two_menus,
+    test_get_one_menu_by_id,
     update_menu,
 )
 
@@ -130,3 +141,53 @@ async def test_delete_menu(
 
     assert response.status_code == 200, "Статус ответа не 200"
     assert response.json() is None, "Сообщение об удалении не соответствует ожидаемому"
+
+
+@pytest.mark.asyncio
+async def test_get_all_menus(
+    test_add_and_get_one_menu: Menu,
+    test_add_and_get_one_submenu: Submenu,
+    test_add_and_get_one_dish: Dish,
+    test_get_one_menu_by_id: Menu,
+    test_get_one_submenu_by_id: Submenu,
+    test_get_one_dish_by_id: Dish,
+    async_client: AsyncClient,
+) -> None:
+    menu = test_get_one_menu_by_id
+    submenu = test_get_one_submenu_by_id
+    dish = test_get_one_dish_by_id
+    response = await async_client.get(reverse(get_all_base))
+
+    assert response.status_code == 200, "Статус ответа не 200"
+
+    menu_response = response.json()[0]
+    assert menu_response["id"] == str(
+        menu.id
+    ), "Идентификатор не соответствует ожидаемому"
+    assert menu_response["title"] == menu.title, "Название не соответствует ожидаемому"
+    assert (
+        menu_response["description"] == menu.description
+    ), "Описание не соответствует ожидаемому"
+
+    submenu_response = response.json()[0]["submenus"][0]
+    assert submenu_response["id"] == str(
+        submenu.id
+    ), "Идентификатор не соответствует ожидаемому"
+    assert (
+        submenu_response["title"] == submenu.title
+    ), "Название не соответствует ожидаемому"
+    assert (
+        submenu_response["description"] == submenu.description
+    ), "Описание не соответствует ожидаемому"
+
+    dish_response = response.json()[0]["submenus"][0]["dishes"][0]
+    assert dish_response["id"] == str(
+        dish.id
+    ), "Идентификатор не соответствует ожидаемому"
+    assert dish_response["title"] == dish.title, "Название не соответствует ожидаемому"
+    assert (
+        dish_response["description"] == dish.description
+    ), "Описание не соответствует ожидаемому"
+    assert dish_response["price"] == str(
+        Decimal(dish.price).quantize(Decimal("0.00"))  # type: ignore
+    ), "Цена не соответствует ожидаемому"
