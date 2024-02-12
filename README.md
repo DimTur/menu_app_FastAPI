@@ -1,3 +1,27 @@
+
+<details>
+<summary><b>ЗАДАНИЯ со звездочками:</b></summary>
+
+1. Нет заданий со звездочками.
+2. Есть. Ниже ссылки
+
+* *Реализовать вывод количества подменю и блюд для Меню через один (сложный) ORM запрос. ([ТЫК](https://github.com/DimTur/menu_app_FastApi/blob/db144b55abde82beb301a31c0d04c9836db0dc44/api_v1/menus/crud.py#L24))
+
+* **Реализовать тестовый сценарий «Проверка кол-ва блюд и подменю в меню» из Postman с помощью pytest ([ТЫК](https://github.com/DimTur/menu_app_FastApi/blob/b09c16aada584ac4c81b2a08f68313bad3b578de/tests/counter))
+
+3. Есть. Ниже ссылки
+
+* *Описать ручки API в соответствий c OpenAPI ([ТЫК](http://127.0.0.1:8000/openapi.json))
+
+* **Реализовать в тестах аналог Django reverse() для FastAPI ([ТЫК](https://github.com/DimTur/menu_app_FastApi/blob/b459d207988c9934daf7acba638724d0e336c781/tests/service.py))
+
+4. Есть. Выполнены не до конца. В текущем варианте подтягиваются только меню из файла. Ниже ссылки
+* *Обновление меню из google sheets раз в 15 сек. ([ТЫК](https://github.com/DimTur/menu_app_FastApi/blob/dadbcdfdba220aeace86fac59ca091a749b66538/tasks/tasks.py))
+
+* **Блюда по акции. Размер скидки (%) указывается в столбце G файла Menu.xlsx ([ТЫК](https://github.com/DimTur/menu_app_FastApi/blob/dadbcdfdba220aeace86fac59ca091a749b66538/tasks/tasks.py))
+
+</details>
+
 ## Запуск приложения
 
 **1. Клонируем репозиторий:**
