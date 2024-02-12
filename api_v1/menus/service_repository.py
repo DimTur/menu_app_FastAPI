@@ -48,7 +48,6 @@ class MenuService:
                 return cached_menus
             menus = await crud.get_menus(session=self.session)
             background_tasks.add_task(self.cache_repo.set_list_menus_cache, menus)
-            # await self.cache_repo.set_list_menus_cache(menus)
             return menus
         except DatabaseError:
             raise HTTPException(
@@ -64,7 +63,6 @@ class MenuService:
         try:
             menu = await crud.create_menu(session=self.session, menu_in=menu_in)
             background_tasks.add_task(self.cache_repo.create_menu_cache, menu)
-            # await self.cache_repo.create_menu_cache(menu)
             return menu
         except IntegrityError:
             raise HTTPException(
@@ -85,7 +83,6 @@ class MenuService:
         menu = await crud.get_menu_by_id(session=self.session, menu_id=menu_id)
         if menu and menu.id:
             background_tasks.add_task(self.cache_repo.set_menu_to_cache, menu)
-            # await self.cache_repo.set_menu_to_cache(menu=menu)
             return menu
 
         raise HTTPException(
@@ -108,7 +105,6 @@ class MenuService:
                 partial=True,
             )
             background_tasks.add_task(self.cache_repo.update_menu_cache, updated_menu)
-            # await self.cache_repo.update_menu_cache(updated_menu)
             return updated_menu
         except IntegrityError:
             raise HTTPException(
@@ -123,5 +119,4 @@ class MenuService:
     ) -> None:
         """Удаление меню по id"""
         background_tasks.add_task(self.cache_repo.delete_menu_from_cache, menu.id)
-        # await self.cache_repo.delete_menu_from_cache(menu_id=menu.id)
         await crud.delete_menu(session=self.session, menu=menu)

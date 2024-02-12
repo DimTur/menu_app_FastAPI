@@ -7,6 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.models import db_helper
 from core.redis.cache_repository import CacheRepository
 
+from ..menus.dependencies import menu_by_id_not_from_cache
+from ..submenus.dependencies import submenu_by_id_not_from_cache
 from . import crud
 from .schemas import Dish, DishCreate, DishUpdatePartial
 
@@ -45,11 +47,6 @@ class DishService:
                 submenu_id=submenu_id,
                 dishes=dishes,
             )
-            # await self.cache_repo.set_list_dishes_cache(
-            #     menu_id=menu_id,
-            #     submenu_id=submenu_id,
-            #     dishes=dishes,
-            # )
             return dishes
         except DatabaseError:
             raise HTTPException(
@@ -65,6 +62,12 @@ class DishService:
     ) -> Dish:
         """Создание нового блюда"""
         try:
+            await menu_by_id_not_from_cache(menu_id=menu_id, session=self.session)
+            await submenu_by_id_not_from_cache(
+                menu_id=menu_id,
+                submenu_id=submenu_id,
+                session=self.session,
+            )
             dish = await crud.create_dish(
                 session=self.session,
                 submenu_id=submenu_id,
@@ -76,11 +79,6 @@ class DishService:
                 submenu_id=submenu_id,
                 dish=dish,
             )
-            # await self.cache_repo.create_dish_cache(
-            #     menu_id=menu_id,
-            #     submenu_id=submenu_id,
-            #     dish=dish,
-            # )
             return dish
         except IntegrityError:
             raise HTTPException(
@@ -119,11 +117,6 @@ class DishService:
                     submenu_id=submenu_id,
                     dish=dish,
                 )
-                # await self.cache_repo.set_dish_to_cache(
-                #     menu_id=menu_id,
-                #     submenu_id=submenu_id,
-                #     dish=dish,
-                # )
                 return dish
 
             raise HTTPException(
@@ -158,11 +151,6 @@ class DishService:
                 submenu_id=submenu_id,
                 dish=dish,
             )
-            # await self.cache_repo.update_dish_cache(
-            #     menu_id=menu_id,
-            #     submenu_id=submenu_id,
-            #     dish=dish,
-            # )
             return dish
         except IntegrityError:
             raise HTTPException(
@@ -181,5 +169,4 @@ class DishService:
             self.cache_repo.delete_dish_from_cache,
             menu_id=menu_id,
         )
-        # await self.cache_repo.delete_dish_from_cache(menu_id=menu_id)
         await crud.delete_dish(session=self.session, dish=dish)

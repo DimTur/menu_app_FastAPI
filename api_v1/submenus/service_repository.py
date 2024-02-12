@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.models import db_helper
 from core.redis.cache_repository import CacheRepository
 
+from ..menus.dependencies import menu_by_id_not_from_cache
 from . import crud
 from .schemas import Submenu, SubmenuCreate, SubmenuUpdatePartial
 
@@ -50,6 +51,7 @@ class SubmenuService:
     ) -> Submenu:
         """Создание нового подменю"""
         try:
+            await menu_by_id_not_from_cache(menu_id, session=self.session)
             submenu = await crud.create_submenu(
                 session=self.session,
                 menu_id=menu_id,
