@@ -4,9 +4,8 @@ import os
 from celery import Celery
 from dotenv import load_dotenv
 
-# from core.rabbitmq.rabbitmq_healper import rabbitmq
 from tasks.db_updater import MenuLoader
-from tasks.parser import MenuParser, menu_parser
+from tasks.parser import MenuParser
 
 load_dotenv()
 
@@ -34,11 +33,9 @@ celery = Celery(
 def update_db():
     try:
         FILE_PATH = "/menu_app_FastApi/admin/Menu.xlsx"
-        # Создаем парсер и получаем JSON-объект с данными о меню
         parser = MenuParser(FILE_PATH)
         menu_json = parser.to_json()
 
-        # Создаем загрузчик и загружаем данные в базу данных
         loader = MenuLoader(menu_json)
         loader.load_menu_to_db()
 

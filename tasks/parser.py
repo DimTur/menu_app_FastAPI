@@ -16,7 +16,6 @@ class MenuParser:
         current_submenu = None
 
         for row in sheet.iter_rows(values_only=True):
-            # Парсинг меню
             if row[0] and row[1] and row[2]:
                 menu_id = row[0]
                 menu_title = row[1]
@@ -28,7 +27,7 @@ class MenuParser:
                     "submenus": [],
                 }
                 menu_data.append(current_menu)
-            # Парсинг подменю
+
             elif row[1] and row[2] and row[3]:
                 submenu_id = row[1]
                 submenu_title = row[2]
@@ -40,7 +39,7 @@ class MenuParser:
                     "dishes": [],
                 }
                 current_menu["submenus"].append(current_submenu)
-            # Парсинг блюд
+
             elif row[2] and row[3] and row[4] and row[5]:
                 dish_id = row[2]
                 dish_title = row[3]
@@ -63,7 +62,6 @@ class MenuParser:
 
 FILE_PATH = "/menu_app_FastApi/admin/Menu.xlsx"
 # FILE_PATH = "Menu.xlsx"
-# Пример использования:
 menu_parser = MenuParser(FILE_PATH)
 # print(menu_parser)
 menu_json = menu_parser.to_json()
