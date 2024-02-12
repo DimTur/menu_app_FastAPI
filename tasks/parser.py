@@ -1,64 +1,70 @@
-from openpyxl import load_workbook
-from openpyxl.worksheet.worksheet import Worksheet
+import json
+
+import openpyxl
+
+
+class MenuParser:
+    def __init__(self, file_path):
+        self.file_path = file_path
+
+    def parse(self):
+        workbook = openpyxl.load_workbook(self.file_path)
+        sheet = workbook.active
+        menu_data = []
+
+        current_menu = None
+        current_submenu = None
+
+        for row in sheet.iter_rows(values_only=True):
+            # Парсинг меню
+            if row[0] and row[1] and row[2]:
+                menu_id = row[0]
+                menu_title = row[1]
+                menu_description = row[2]
+                current_menu = {
+                    "title": menu_title,
+                    "description": menu_description,
+                    "id": menu_id,
+                    "submenus": [],
+                }
+                menu_data.append(current_menu)
+            # Парсинг подменю
+            elif row[1] and row[2] and row[3]:
+                submenu_id = row[1]
+                submenu_title = row[2]
+                submenu_description = row[3]
+                current_submenu = {
+                    "title": submenu_title,
+                    "description": submenu_description,
+                    "id": submenu_id,
+                    "dishes": [],
+                }
+                current_menu["submenus"].append(current_submenu)
+            # Парсинг блюд
+            elif row[2] and row[3] and row[4] and row[5]:
+                dish_id = row[2]
+                dish_title = row[3]
+                dish_description = row[4]
+                dish_price = row[5]
+                dish = {
+                    "title": dish_title,
+                    "description": dish_description,
+                    "price": dish_price,
+                    "id": dish_id,
+                }
+                current_submenu["dishes"].append(dish)
+
+        return menu_data
+
+    def to_json(self):
+        menu_data = self.parse()
+        return json.dumps(menu_data, indent=2, ensure_ascii=False)
+
 
 FILE_PATH = "/menu_app_FastApi/admin/Menu.xlsx"
-
-
-class ParserService:
-    """Класс для парсинга данных из файла и записи в список"""
-
-    def __init__(self) -> None:
-        self.sheet: Worksheet = load_workbook(filename=FILE_PATH).active
-        self.result: list = []
-
-    def get_dish(self, row: int) -> dict:
-        """Извлекает данные о блюде и формирует словарь"""
-        dish: dict[str, str | int] = {}
-        cells = self.sheet[f"C{row}":f"G{row}"][0]  # type: ignore
-        dish["id"] = cells[0].value
-        dish["title"] = cells[1].value
-        dish["description"] = cells[2].value
-        dish["price"] = cells[3].value
-        if cells[4]:
-            dish["discount"] = cells[3].value
-        else:
-            dish["discount"] = 0
-        return dish
-
-    def get_submenu(self, row: int, max_row: int) -> dict:
-        """Извлекает данные о подменю и формирует словарь"""
-        submenu: dict = {"dishes": []}
-        cells = self.sheet[f"C{row}":f"D{row}"][0]  # type: ignore
-        submenu["id"] = cells[0].value
-        submenu["title"] = cells[1].value
-        submenu["description"] = cells[2].value
-        for i in range(row + 1, max_row + 1):
-            if self.sheet[f"C{i}"].value:
-                dish = self.get_dish(i)
-                if dish["description"]:
-                    submenu["dishes"].append(dish)
-                else:
-                    break
-        return submenu
-
-    def get_menu(self, row: int, max_row: int) -> dict:
-        """Извлекает данные о меню и формирует словарь"""
-        menu: dict = {"submenus": []}
-        cells = self.sheet[f"A{row}":f"C{row}"][0]   # type: ignore
-        menu["id"] = cells[0].value
-        menu["title"] = cells[1].value
-        menu["description"] = cells[2].value
-        for i in range(row + 1, max_row + 1):
-            if self.sheet[f"B{i}"].value:
-                submenu = self.get_submenu(i, max_row)
-                if submenu["description"]:
-                    menu["submenus"].append(submenu)
-                else:
-                    break
-        return menu
-
-    def parser(self) -> list[dict[str, str | list]]:
-        for i in range(1, self.sheet.max_row + 1):
-            if self.sheet[f"A{i}"].value:
-                self.result.append(self.get_menu(i, self.sheet.max_row))
-        return self.result
+# FILE_PATH = "Menu.xlsx"
+# Пример использования:
+menu_parser = MenuParser(FILE_PATH)
+# print(menu_parser)
+menu_json = menu_parser.to_json()
+# print(menu_json)

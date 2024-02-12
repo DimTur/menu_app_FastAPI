@@ -59,6 +59,41 @@ services:
     networks:
       - backend_network
 
+  c:
+    image: rabbitmq:3.13-rc
+    hostname: rabbitmq
+    restart: always
+    container_name: rabbitmq
+    volumes:
+      - rabbit_data:/var/lib/rabbitmq
+    networks:
+      - backend_network
+      - db_network
+    env_file:
+      - .env
+    ports:
+      - "5672:5672"
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 30s
+      retries: 5
+
+  celery:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    container_name: celery
+    restart: always
+    networks:
+      - backend_network
+      - db_network
+    command: ["celery", "--app=tasks.tasks:celery", "worker", "-l", "INFO"]
+    depends_on:
+      - backend
+
 networks:
   backend_network:
     name: menu_app
@@ -70,3 +105,5 @@ volumes:
     name: pg_data_menu
   redis_data:
     name: redis_data
+  rabbit_data:
+    name: rabbit_data

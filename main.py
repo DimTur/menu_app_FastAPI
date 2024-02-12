@@ -5,10 +5,13 @@ from fastapi import FastAPI
 
 from api_v1 import router as router_v1
 from core.config import settings
+from tasks.tasks import CELERY_STATUS, update_db
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    if CELERY_STATUS:
+        update_db.delay()
     yield
 
 
