@@ -1,5 +1,3 @@
-import json
-
 import openpyxl
 
 
@@ -54,15 +52,3 @@ class MenuParser:
                 current_submenu["dishes"].append(dish)
 
         return menu_data
-
-    def to_json(self):
-        menu_data = self.parse()
-        return json.dumps(menu_data, indent=2, ensure_ascii=False)
-
-
-FILE_PATH = "/menu_app_FastApi/admin/Menu.xlsx"
-# FILE_PATH = "Menu.xlsx"
-menu_parser = MenuParser(FILE_PATH)
-# print(menu_parser)
-menu_json = menu_parser.to_json()
-# print(menu_json)

@@ -18,6 +18,14 @@ async def get_all_base(session: AsyncSession):
     )
     result: Result = await session.execute(stmt)
     menus = result.scalars().fetchall()
+
+    for menu in menus:
+        menu.submenus_count = len(menu.submenus)
+        menu.dishes_count = sum(len(submenu.dishes) for submenu in menu.submenus)
+
+        for submenu in menu.submenus:
+            submenu.dishes_count = len(submenu.dishes)
+
     return list(menus)
 
 

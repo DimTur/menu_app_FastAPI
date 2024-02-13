@@ -1,10 +1,13 @@
+import asyncio
 import logging
 import os
 
 from celery import Celery
 from dotenv import load_dotenv
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from tasks.db_updater import MenuLoader
+from core.models import db_helper
+from tasks.db_updater import DatabaseUpdater
 from tasks.parser import MenuParser
 
 load_dotenv()
@@ -25,6 +28,18 @@ celery = Celery(
     ),
 )
 
+FILE_PATH = "/menu_app_FastApi/admin/Menu.xlsx"
+
+
+async def update_db_async(
+    session: AsyncSession,
+):
+    menu_parser = MenuParser(FILE_PATH)
+    menu_data = menu_parser.parse()
+
+    loader = DatabaseUpdater(menu_data, session=session)
+    await loader.add_menu_items(menu_data)
+
 
 @celery.task(
     default_retry_delay=15,
@@ -32,13 +47,11 @@ celery = Celery(
 )
 def update_db():
     try:
-        FILE_PATH = "/menu_app_FastApi/admin/Menu.xlsx"
-        parser = MenuParser(FILE_PATH)
-        menu_json = parser.to_json()
-
-        loader = MenuLoader(menu_json)
-        loader.load_menu_to_db()
+        session = db_helper.get_scoped_session()
+        asyncio.get_event_loop().run_until_complete(update_db_async(session))
 
     except Exception as error:
         logging.error(error)
         raise error
+    finally:
+        update_db.retry()

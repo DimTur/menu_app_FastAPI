@@ -20,6 +20,10 @@ async def get_submenus(session: AsyncSession, menu_id: uuid.UUID) -> list[Submen
     )
     result: Result = await session.execute(stmt)
     submenus = result.scalars().all()
+
+    for submenu in submenus:
+        submenu.dishes_count = len(submenu.dishes)
+
     return list(submenus)
 
 

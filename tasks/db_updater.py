@@ -1,72 +1,46 @@
-import json
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from sqlalchemy.exc import IntegrityError
-
-from core.models import db_helper
-
-from .parser import menu_json
+from core.models import Dish, Menu, Submenu
 
 
-class MenuLoader:
-    def __init__(self, menu_json):
-        self.menu_json = menu_json
+class DatabaseUpdater:
+    """Добавление в БД данных из excel файла"""
 
-    def load_menu_to_db(self):
-        menu_data = json.loads(self.menu_json)
-        with db_helper.connect() as connection:
-            with connection.transaction():
-                for menu in menu_data:
-                    self._load_menu(connection, menu)
+    def __init__(
+        self,
+        parser_data: list[dict],
+        session: AsyncSession,
+    ):
+        self.parser_data = parser_data
+        self.session = session
 
-    def _load_menu(self, connection, menu):
-        # Добавление меню
-        try:
-            connection.execute(
-                "INSERT INTO menus (id, title, description) VALUES ($1, $2, $3)",
-                menu["id"],
-                menu["title"],
-                menu["description"],
+    async def add_menu_items(self, full_base):
+        for menu in full_base:
+            menu_item = Menu(
+                title=menu["title"],
+                description=menu["description"],
+                id=menu["id"],
+                submenus=[],
             )
-        except IntegrityError:
-            pass  # Если меню уже существует, пропускаем
 
-        # Добавление подменю и блюд
-        for submenu in menu["submenus"]:
-            self._load_submenu(connection, menu["id"], submenu)
+            for submenu in menu["submenus"]:
+                submenu_item = Submenu(
+                    title=submenu["title"],
+                    description=submenu["description"],
+                    id=submenu["id"],
+                    dishes=[],
+                )
+                menu_item.submenus.append(submenu_item)
 
-    def _load_submenu(self, connection, menu_id, submenu):
-        # Добавление подменю
-        try:
-            connection.execute(
-                "INSERT INTO submenus (id, title, description, menu_id) VALUES ($1, $2, $3, $4)",
-                submenu["id"],
-                submenu["title"],
-                submenu["description"],
-                menu_id,
-            )
-        except IntegrityError:
-            pass  # Если подменю уже существует, пропускаем
+                for dish in submenu["dishes"]:
+                    dish_item = Dish(
+                        title=dish["title"],
+                        description=dish["description"],
+                        price=dish["price"],
+                        id=dish["id"],
+                    )
+                    submenu_item.dishes.append(dish_item)
 
-        # Добавление блюд
-        for dish in submenu["dishes"]:
-            self._load_dish(connection, submenu["id"], dish)
-
-    def _load_dish(self, connection, submenu_id, dish):
-        # Добавление блюда
-        try:
-            connection.execute(
-                "INSERT INTO dishes (id, title, description, price, submenu_id) VALUES ($1, $2, $3, $4, $5)",
-                dish["id"],
-                dish["title"],
-                dish["description"],
-                dish["price"],
-                submenu_id,
-            )
-        except IntegrityError:
-            pass  # Если блюдо уже существует, пропускаем
-
-
-# Пример использования
-menu_json = menu_json
-menu_loader = MenuLoader(menu_json)
-# await menu_loader.load_menu_to_db()
+            self.session.add(menu_item)
+            await self.session.commit()
+            await self.session.refresh(menu_item)
