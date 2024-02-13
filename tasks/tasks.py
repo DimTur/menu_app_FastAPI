@@ -31,9 +31,7 @@ celery = Celery(
 FILE_PATH = "/menu_app_FastApi/admin/Menu.xlsx"
 
 
-async def update_db_async(
-    session: AsyncSession,
-):
+async def update_db_async(session: AsyncSession):
     menu_parser = MenuParser(FILE_PATH)
     menu_data = menu_parser.parse()
 
