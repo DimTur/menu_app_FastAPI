@@ -39,6 +39,7 @@ async def update_db_async(
 
     loader = DatabaseUpdater(menu_data, session=session)
     await loader.add_menu_items(menu_data)
+    del menu_parser
 
 
 @celery.task(
