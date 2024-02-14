@@ -15,7 +15,7 @@
 
 * **Реализовать в тестах аналог Django reverse() для FastAPI ([ТЫК](https://github.com/DimTur/menu_app_FastApi/blob/b459d207988c9934daf7acba638724d0e336c781/tests/service.py))
 
-4. Есть. Выполнены не до конца. Ошибке при запуске не пугаемся. Ниже ссылки
+4. Есть. Ниже ссылки
 * *Обновление меню из Menu.xlsx раз в 15 сек. ([ТЫК](https://github.com/DimTur/menu_app_FastApi/blob/dadbcdfdba220aeace86fac59ca091a749b66538/tasks/tasks.py))
 
 * **Блюда по акции. Размер скидки (%) указывается в столбце G файла Menu.xlsx ([ТЫК](https://github.com/DimTur/menu_app_FastApi/blob/dadbcdfdba220aeace86fac59ca091a749b66538/tasks/tasks.py))
