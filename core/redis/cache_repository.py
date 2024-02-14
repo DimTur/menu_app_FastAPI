@@ -1,14 +1,15 @@
 import pickle
 import uuid
 
+import redis.asyncio as redis
 from fastapi import Depends
 
 from core.models import Dish, Menu, Submenu
-from core.redis.redis_helper import cache
+from core.redis.redis_helper import cache, get_async_redis_client
 
 
 class CacheRepository:
-    def __init__(self, cacher=Depends(cache)) -> None:
+    def __init__(self, cacher: redis.Redis = Depends(get_async_redis_client)) -> None:
         self.cacher = cacher
 
     async def clear_cache_by_mask(self, pattern: str) -> None:

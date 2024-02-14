@@ -24,3 +24,9 @@ async def cache():
             yield client
         finally:
             await client.aclose()
+
+
+async def get_async_redis_client():
+    return redis.Redis(
+        host=f"{GlobalConfig.redis_server}", port=int(f"{GlobalConfig.redis_port}")
+    )

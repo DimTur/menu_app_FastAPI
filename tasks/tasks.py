@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import db_helper
+from core.redis.redis_helper import REDIS_URL, get_async_redis_client
 from tasks.db_updater import DatabaseUpdater
 from tasks.parser import MenuParser
 
@@ -26,6 +27,7 @@ celery = Celery(
         f"amqp://{RABBITMQ_DEFAULT_USER}:{RABBITMQ_DEFAULT_PASS}@"
         f"{RABBITMQ_HOST}:{RABBITMQ_DEFAULT_PORT}"
     ),
+    backend=REDIS_URL,
 )
 
 FILE_PATH = "/menu_app_FastApi/admin/Menu.xlsx"
@@ -35,7 +37,8 @@ async def update_db_async(session: AsyncSession):
     menu_parser = MenuParser(FILE_PATH)
     menu_data = menu_parser.parse()
 
-    loader = DatabaseUpdater(menu_data, session=session)
+    redis_client = await get_async_redis_client()
+    loader = DatabaseUpdater(menu_data, session=session, redis_client=redis_client)
     await loader.add_menu_items(menu_data)
     del menu_parser
 

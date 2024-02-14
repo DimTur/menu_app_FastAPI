@@ -1,3 +1,4 @@
+import redis
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,9 +12,11 @@ class DatabaseUpdater:
         self,
         parser_data: list[dict],
         session: AsyncSession,
+        redis_client: redis.Redis,
     ):
         self.parser_data = parser_data
         self.session = session
+        self.redis_client = redis_client
 
     async def add_menu_items(self, full_base: list[dict]) -> None:
         for menu in full_base:
@@ -60,9 +63,14 @@ class DatabaseUpdater:
         for dish in new_submenu_data["dishes"]:
             existing_dish = await self.get_existing_dish(dish["id"])
             if existing_dish:
-                await self.update_dish(existing_dish, dish, existing_submenu)
+                await self.update_dish(
+                    existing_dish,
+                    dish,
+                    existing_submenu,
+                    self.redis_client,
+                )
             else:
-                await self.add_new_dish(dish, existing_submenu)
+                await self.add_new_dish(dish, existing_submenu, self.redis_client)
 
         await self.remove_dish_if_not_in_data(
             existing_submenu, new_submenu_data["dishes"]
@@ -74,11 +82,19 @@ class DatabaseUpdater:
         return result.scalar()
 
     async def update_dish(
-        self, existing_dish: Dish, new_dish_data: dict, submenu: Submenu
+        self, existing_dish: Dish, new_dish_data: dict, submenu: Submenu, redis_client
     ) -> None:
         existing_dish.title = new_dish_data["title"]
         existing_dish.description = new_dish_data["description"]
         existing_dish.price = new_dish_data["price"]
+
+        await self.save_dish_discount(
+            existing_dish.id, new_dish_data.get("dish_discount"), redis_client
+        )
+
+    async def save_dish_discount(self, dish_id, dish_discount, redis_client):
+        if dish_discount is not None:
+            await redis_client.set(f"dish_discount_{dish_id}", dish_discount)
 
     async def add_new_menu(self, menu_data: dict) -> None:
         menu_item = Menu(
@@ -102,9 +118,18 @@ class DatabaseUpdater:
         menu.submenus.append(submenu_item)
 
         for dish in submenu_data["dishes"]:
-            await self.add_new_dish(dish, submenu_item)
+            await self.add_new_dish(
+                dish,
+                submenu_item,
+                self.redis_client,
+            )
 
-    async def add_new_dish(self, dish_data: dict, submenu: Submenu) -> None:
+    async def add_new_dish(
+        self,
+        dish_data: dict,
+        submenu: Submenu,
+        redis_client,
+    ) -> None:
         dish_item = Dish(
             title=dish_data["title"],
             description=dish_data["description"],
@@ -113,6 +138,12 @@ class DatabaseUpdater:
             dish_discount=dish_data["dish_discount"],
         )
         submenu.dishes.append(dish_item)
+
+        await self.save_dish_discount(
+            dish_item.id,
+            dish_data.get("dish_discount"),
+            redis_client,
+        )
 
     async def remove_menu_if_not_in_data(self, full_base: list[dict]) -> None:
         menu_ids_from_data = [menu["id"] for menu in full_base]
