@@ -88,6 +88,8 @@ class DatabaseUpdater:
         existing_dish.description = new_dish_data["description"]
         existing_dish.price = new_dish_data["price"]
 
+        await self.delete_dish_discount(existing_dish.id, redis_client)
+
         await self.save_dish_discount(
             existing_dish.id, new_dish_data.get("dish_discount"), redis_client
         )
@@ -95,6 +97,9 @@ class DatabaseUpdater:
     async def save_dish_discount(self, dish_id, dish_discount, redis_client):
         if dish_discount is not None:
             await redis_client.set(f"dish_discount_{dish_id}", dish_discount)
+
+    async def delete_dish_discount(self, dish_id, redis_client):
+        await redis_client.delete(f"dish_discount_{dish_id}")
 
     async def add_new_menu(self, menu_data: dict) -> None:
         menu_item = Menu(
