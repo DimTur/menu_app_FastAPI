@@ -1,4 +1,5 @@
 import uuid
+from decimal import Decimal
 
 from fastapi import BackgroundTasks, Depends, HTTPException, status
 from sqlalchemy.exc import DatabaseError, IntegrityError
@@ -20,6 +21,10 @@ class MenuService:
         self.session = session
         self.cache_repo = cache_repo
 
+    async def get_dish_discount(self, dish_id: uuid.UUID) -> float:
+        """Возвращает скидку для указанного блюда из кеша Redis."""
+        return await self.cache_repo.get_dish_discount_from_cache(dish_id=dish_id)
+
     async def get_all_base(
         self,
         background_tasks: BackgroundTasks,
@@ -30,6 +35,17 @@ class MenuService:
             if cached_all_base:
                 return cached_all_base
             all_base = await crud.get_all_base(session=self.session)
+
+            for menu in all_base:
+                for submenu in menu.submenus:
+                    for dish in submenu.dishes:
+                        dish_discount = await self.get_dish_discount(dish.id)
+                        if dish_discount is not None:
+                            dish_discount_decimal = Decimal(dish_discount)
+                            dish.price = dish.price - (
+                                dish.price * dish_discount_decimal
+                            )
+
             background_tasks.add_task(self.cache_repo.set_all_base_cache, all_base)
             return all_base
         except DatabaseError:
