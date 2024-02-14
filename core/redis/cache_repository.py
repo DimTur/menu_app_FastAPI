@@ -5,7 +5,7 @@ import redis.asyncio as redis
 from fastapi import Depends
 
 from core.models import Dish, Menu, Submenu
-from core.redis.redis_helper import cache, get_async_redis_client
+from core.redis.redis_helper import get_async_redis_client
 
 
 class CacheRepository:
