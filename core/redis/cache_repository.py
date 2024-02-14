@@ -246,3 +246,12 @@ class CacheRepository:
 
     async def set_discount_to_cache(self, dish_id: int, discount: float) -> None:
         await self.cacher.set("dish_discount_" + str(dish_id), discount)
+
+    async def get_dish_discount_from_cache(self, dish_id: uuid.UUID) -> float:
+        """Возвращает скидку для указанного блюда из кеша Redis."""
+        key = f"dish_discount_{dish_id}"
+        raw_discount = await self.cacher.get(key)
+        if raw_discount is not None:
+            return float(raw_discount)
+        else:
+            return 0.0  # Если скидка не найдена, возвращаем 0
