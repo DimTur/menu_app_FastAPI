@@ -1,5 +1,3 @@
-from typing import Dict, List
-
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -112,6 +110,7 @@ class DatabaseUpdater:
             description=dish_data["description"],
             price=dish_data["price"],
             id=dish_data["id"],
+            dish_discount=dish_data["dish_discount"],
         )
         submenu.dishes.append(dish_item)
 

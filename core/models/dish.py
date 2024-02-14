@@ -15,6 +15,7 @@ class Dish(Base):
     __tablename__ = "dishes"  # type: ignore
 
     price: Mapped[DECIMAL] = mapped_column(DECIMAL(precision=10, scale=2))
+    dish_discount: Mapped[DECIMAL] = mapped_column(DECIMAL(precision=4, scale=2))
     submenu_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("submenus.id"),
     )

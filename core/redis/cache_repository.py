@@ -242,3 +242,6 @@ class CacheRepository:
     async def delete_all_base_cache(self) -> None:
         """Удаление всех меню из кэша с подменю и блюдами"""
         await self.clear_cache_by_mask("/menus/all/")
+
+    async def set_discount_to_cache(self, dish_id: int, discount: float) -> None:
+        await self.cacher.set("dish_discount_" + str(dish_id), discount)

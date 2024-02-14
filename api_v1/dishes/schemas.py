@@ -9,7 +9,8 @@ from pydantic import BaseModel, ConfigDict
 class DishBase(BaseModel):
     title: Annotated[str, MinLen(3), MaxLen(32)]
     description: Annotated[str, MinLen(0), MaxLen(300)]
-    price: Decimal | None
+    price: Decimal
+    dish_discount: Decimal
 
 
 class DishCreate(DishBase):
